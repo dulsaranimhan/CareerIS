@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 const internships = [
   { company: 'Northstar Studio', mark: 'N', tone: 'lavender', role: 'Junior UI/UX Designer', detail: 'Colombo · Hybrid', tag: 'Design', days: '2 days ago' },
   { company: 'Greenline Labs', mark: 'G', tone: 'mint', role: 'Software Engineering Intern', detail: 'Remote · Sri Lanka', tag: 'Engineering', days: '4 days ago' },
@@ -8,7 +10,85 @@ function ArrowUpRight() {
   return <span aria-hidden="true" className="arrow-up-right">↗</span>;
 }
 
+function authRouteFromHash() {
+  const match = window.location.hash.match(/^#(register|sign-in)(?:\/(student|company))?$/);
+  return match ? { mode: match[1], role: match[2] || 'student' } : null;
+}
+
+function AuthScreen({ mode, role, onModeChange, onRoleChange, onHome }) {
+  const [message, setMessage] = useState('');
+  const isRegister = mode === 'register';
+  const isCompany = role === 'company';
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    if (isRegister && formData.get('password') !== formData.get('confirmPassword')) {
+      setMessage('The passwords do not match. Please check them and try again.');
+      return;
+    }
+    setMessage('Your form is ready. Account access will work once CareerIS is connected to its backend.');
+  }
+
+  return (
+    <main className="auth-shell">
+      <div className="auth-art" aria-hidden="true"><span className="auth-orbit auth-orbit-one" /><span className="auth-orbit auth-orbit-two" /><span className="auth-art-star">✳</span><div className="auth-art-note"><span className="auth-art-note-icon">↗</span><span><b>A new chapter</b><small>begins with one step</small></span></div><div className="auth-art-message"><span>CareerIS</span><strong>Good beginnings<br />start here.</strong><small>Students × Companies × Opportunity</small></div></div>
+      <section className="auth-panel" aria-labelledby="auth-title">
+        <a className="brand auth-brand" href="#top" onClick={(event) => { event.preventDefault(); onHome(); }}><span className="brand-symbol"><span /></span><span>Career<span className="brand-is">IS</span></span></a>
+        <div className="auth-content">
+          <a className="auth-back" href="#top" onClick={(event) => { event.preventDefault(); onHome(); }}>← <span>Back to home</span></a>
+          <p className="eyebrow">{isRegister ? 'START YOUR NEXT CHAPTER' : 'WELCOME BACK'}</p>
+          <h1 id="auth-title">{isRegister ? 'Create your account' : 'Good to see you again.'}</h1>
+          <p className="auth-intro">{isRegister ? 'Join CareerIS and take the next step in your journey.' : 'Sign in to continue your CareerIS journey.'}</p>
+
+          <div className="account-type" role="group" aria-label="Choose account type">
+            <button type="button" className={!isCompany ? 'selected' : ''} aria-pressed={!isCompany} onClick={() => onRoleChange('student')}><span>♧</span> Student</button>
+            <button type="button" className={isCompany ? 'selected' : ''} aria-pressed={isCompany} onClick={() => onRoleChange('company')}><span>▤</span> Company</button>
+          </div>
+
+          <form className="auth-form" onSubmit={handleSubmit}>
+            {isRegister && !isCompany && <label>Full name<input name="fullName" type="text" autoComplete="name" placeholder="e.g. Maya Perera" required /></label>}
+            {isRegister && isCompany && <><label>Company name<input name="companyName" type="text" autoComplete="organization" placeholder="e.g. Northstar Studio" required /></label><label>Your name<input name="contactName" type="text" autoComplete="name" placeholder="e.g. Alex Fernando" required /></label></>}
+            <label>{isCompany ? 'Work email' : 'Email address'}<input name="email" type="email" autoComplete="email" placeholder={isCompany ? 'you@company.com' : 'you@example.com'} required /></label>
+            <label>Password<input name="password" type="password" autoComplete={isRegister ? 'new-password' : 'current-password'} placeholder="At least 8 characters" minLength={8} required /></label>
+            {isRegister && <label>Confirm password<input name="confirmPassword" type="password" autoComplete="new-password" placeholder="Enter your password again" minLength={8} required /></label>}
+            {!isRegister && <a className="forgot-link" href="#forgot-password" onClick={(event) => { event.preventDefault(); setMessage('Password recovery will be available when account services are connected.'); }}>Forgot password?</a>}
+            <button className="button button-purple auth-submit" type="submit">{isRegister ? 'Create account' : 'Sign in'} <ArrowUpRight /></button>
+            {message && <p className="form-message" role="status">{message}</p>}
+          </form>
+          <p className="auth-switch">{isRegister ? 'Already have an account?' : 'New to CareerIS?'} <button type="button" onClick={() => onModeChange(isRegister ? 'sign-in' : 'register')}>{isRegister ? 'Sign in' : 'Create an account'}</button></p>
+          <p className="auth-note">This is the frontend account flow. Account creation and sign-in will be enabled after the backend is connected.</p>
+        </div>
+        <footer className="auth-footer"><span>© 2026 CareerIS</span><span>Good beginnings, built together.</span></footer>
+      </section>
+    </main>
+  );
+}
+
 function App() {
+  const [auth, setAuth] = useState(authRouteFromHash);
+
+  useEffect(() => {
+    const syncRoute = () => setAuth(authRouteFromHash());
+    window.addEventListener('hashchange', syncRoute);
+    window.addEventListener('popstate', syncRoute);
+    return () => {
+      window.removeEventListener('hashchange', syncRoute);
+      window.removeEventListener('popstate', syncRoute);
+    };
+  }, []);
+
+  function openAuth(mode, role = 'student') {
+    const next = { mode, role };
+    window.history.pushState(next, '', `#${mode}/${role}`);
+    setAuth(next);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  if (auth) {
+    return <AuthScreen mode={auth.mode} role={auth.role} onModeChange={(mode) => openAuth(mode, auth.role)} onRoleChange={(role) => openAuth(auth.mode, role)} onHome={() => { window.history.pushState(null, '', window.location.pathname); setAuth(null); }} />;
+  }
+
   return (
     <main className="site-shell" id="top">
       <header className="topbar">
@@ -20,8 +100,8 @@ function App() {
           <a href="#for-companies">For companies</a>
           <a href="#how-it-works">How it works</a>
         </nav>
-        <div className="nav-actions"><a className="sign-in" href="#join">Sign in</a><a className="button button-dark nav-join" href="#join">Join CareerIS <ArrowUpRight /></a></div>
-        <a className="mobile-join" href="#join">Join <ArrowUpRight /></a>
+        <div className="nav-actions"><a className="sign-in" href="#sign-in/student" onClick={(event) => { event.preventDefault(); openAuth('sign-in'); }}>Sign in</a><a className="button button-dark nav-join" href="#register/student" onClick={(event) => { event.preventDefault(); openAuth('register'); }}>Join CareerIS <ArrowUpRight /></a></div>
+        <a className="mobile-join" href="#register/student" onClick={(event) => { event.preventDefault(); openAuth('register'); }}>Join <ArrowUpRight /></a>
       </header>
 
       <section className="hero" aria-labelledby="hero-title">
@@ -32,7 +112,7 @@ function App() {
             <p className="eyebrow"><span className="status-dot" /> YOUR NEXT CHAPTER STARTS HERE</p>
             <h1 id="hero-title">Find your place.<br /><span>Make your start.</span></h1>
             <p className="hero-description">Discover internships that fit your ambitions. Meet companies ready to give new talent a chance.</p>
-            <div className="hero-ctas"><a className="button button-purple" href="#opportunities">Explore internships <ArrowUpRight /></a><a className="button button-light" href="#for-companies">I’m hiring <ArrowUpRight /></a></div>
+            <div className="hero-ctas"><a className="button button-purple" href="#opportunities">Explore internships <ArrowUpRight /></a><a className="button button-light" href="#register/company" onClick={(event) => { event.preventDefault(); openAuth('register', 'company'); }}>I’m hiring <ArrowUpRight /></a></div>
             <div className="hero-proof"><div className="proof-avatars"><i>R</i><i>S</i><i>M</i><i>+</i></div><p><strong>A good first step changes everything.</strong><br />Made for students and the people who hire them.</p></div>
           </div>
 
@@ -55,16 +135,16 @@ function App() {
       </section>
 
       <section className="opportunities section-wrap" id="opportunities">
-        <div className="section-heading"><div><p className="eyebrow">A START WORTH FINDING</p><h2>Open doors, <span>real experience.</span></h2></div><a className="text-link" href="#join">Browse all internships <ArrowUpRight /></a></div>
-        <div className="internship-grid">{internships.map((item) => <article className="internship-card" key={item.company}><div className="listing-top"><span className={`company-mark ${item.tone}`}>{item.mark}</span><span className="listing-age">{item.days}</span></div><p className="company-name">{item.company}</p><h3>{item.role}</h3><p className="listing-detail">{item.detail}</p><div className="listing-footer"><span className="category-pill">{item.tag}</span><a href="#join" aria-label={`View ${item.role}`}><ArrowUpRight /></a></div></article>)}</div>
+        <div className="section-heading"><div><p className="eyebrow">A START WORTH FINDING</p><h2>Open doors, <span>real experience.</span></h2></div><a className="text-link" href="#register/student" onClick={(event) => { event.preventDefault(); openAuth('register'); }}>Browse all internships <ArrowUpRight /></a></div>
+        <div className="internship-grid">{internships.map((item) => <article className="internship-card" key={item.company}><div className="listing-top"><span className={`company-mark ${item.tone}`}>{item.mark}</span><span className="listing-age">{item.days}</span></div><p className="company-name">{item.company}</p><h3>{item.role}</h3><p className="listing-detail">{item.detail}</p><div className="listing-footer"><span className="category-pill">{item.tag}</span><a href="#register/student" onClick={(event) => { event.preventDefault(); openAuth('register'); }} aria-label={`View ${item.role}`}><ArrowUpRight /></a></div></article>)}</div>
       </section>
 
       <section className="split-section section-wrap" id="how-it-works">
-        <div className="split-card student-card"><div className="split-icon">✳</div><p className="eyebrow">FOR STUDENTS</p><h2>Your first role<br />is a big deal.</h2><p>Show companies what you bring. Add your qualifications, share your CV, and apply to opportunities that interest you.</p><a className="text-link" href="#join">Build your profile <ArrowUpRight /></a><div className="split-decoration student-deco">01<span>→</span>02</div></div>
-        <div className="split-card company-card" id="for-companies"><div className="split-icon company-icon">↗</div><p className="eyebrow">FOR COMPANIES</p><h2>Meet the talent<br />ready to begin.</h2><p>Share an internship vacancy, review applications, and invite promising candidates to interview.</p><a className="text-link" href="#join">Post a vacancy <ArrowUpRight /></a><div className="company-stamp">CAREER<br />STARTS HERE</div></div>
+        <div className="split-card student-card"><div className="split-icon">✳</div><p className="eyebrow">FOR STUDENTS</p><h2>Your first role<br />is a big deal.</h2><p>Show companies what you bring. Add your qualifications, share your CV, and apply to opportunities that interest you.</p><a className="text-link" href="#register/student" onClick={(event) => { event.preventDefault(); openAuth('register'); }}>Build your profile <ArrowUpRight /></a><div className="split-decoration student-deco">01<span>→</span>02</div></div>
+        <div className="split-card company-card" id="for-companies"><div className="split-icon company-icon">↗</div><p className="eyebrow">FOR COMPANIES</p><h2>Meet the talent<br />ready to begin.</h2><p>Share an internship vacancy, review applications, and invite promising candidates to interview.</p><a className="text-link" href="#register/company" onClick={(event) => { event.preventDefault(); openAuth('register', 'company'); }}>Post a vacancy <ArrowUpRight /></a><div className="company-stamp">CAREER<br />STARTS HERE</div></div>
       </section>
 
-      <section className="closing-cta" id="join"><div className="cta-decoration">✳</div><p className="eyebrow">THE NEXT STEP IS YOURS</p><h2>Let’s make it <span>happen.</span></h2><p>Whether you’re looking for a start or someone ready to grow, there’s a place for you here.</p><div className="hero-ctas"><a className="button button-dark" href="#top">Join as a student <ArrowUpRight /></a><a className="button button-light" href="#for-companies">Join as a company <ArrowUpRight /></a></div></section>
+      <section className="closing-cta" id="join"><div className="cta-decoration">✳</div><p className="eyebrow">THE NEXT STEP IS YOURS</p><h2>Let’s make it <span>happen.</span></h2><p>Whether you’re looking for a start or someone ready to grow, there’s a place for you here.</p><div className="hero-ctas"><a className="button button-dark" href="#register/student" onClick={(event) => { event.preventDefault(); openAuth('register'); }}>Join as a student <ArrowUpRight /></a><a className="button button-light" href="#register/company" onClick={(event) => { event.preventDefault(); openAuth('register', 'company'); }}>Join as a company <ArrowUpRight /></a></div></section>
 
       <footer className="site-footer"><a className="brand" href="#top"><span className="brand-symbol"><span /></span><span>Career<span className="brand-is">IS</span></span></a><span>Good beginnings, built together.</span><div><a href="#opportunities">Internships</a><a href="#for-companies">Companies</a><a href="#how-it-works">About</a></div><small>© 2026 CareerIS</small></footer>
     </main>
