@@ -27,11 +27,40 @@ frontend/   React application
 backend/    Spring Boot application
 ```
 
+## Account registration API
+
+The backend provides `POST /api/auth/register` for student and company accounts. Send JSON with `role` (`STUDENT` or `COMPANY`), `name`, `email`, and `password`. Company registrations also require `contactName`. Passwords are hashed before saving, and email addresses are normalized and unique in the `users` collection.
+
+Example student request:
+
+```json
+{
+  "role": "STUDENT",
+  "name": "Maya Perera",
+  "email": "maya@example.com",
+  "password": "a-secure-password"
+}
+```
+
+Example company request:
+
+```json
+{
+  "role": "COMPANY",
+  "name": "Northstar Studio",
+  "contactName": "Alex Fernando",
+  "email": "alex@northstar.example",
+  "password": "a-secure-password"
+}
+```
+
+The API returns `201 Created` with the account ID, name, email, role, and creation time. Duplicate emails return `409 Conflict`. Sign-in is a later step; other API routes remain closed until authentication is added.
+
 ## Run locally
 
 Prerequisites: Node.js, Java 17 or newer, Maven, and MongoDB.
 
-The application setup instructions will be expanded as each part is implemented.
+Start MongoDB locally, then run the backend with `mvn spring-boot:run` from `backend/`. Run the frontend with `npm install` followed by `npm run dev` from `frontend/`.
 
 ## Development plan
 
