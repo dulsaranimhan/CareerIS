@@ -17,17 +17,53 @@ function authRouteFromHash() {
 
 function AuthScreen({ mode, role, onModeChange, onRoleChange, onHome }) {
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const isRegister = mode === 'register';
   const isCompany = role === 'company';
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    setMessage('');
+    const formData = new FormData(form);
     if (isRegister && formData.get('password') !== formData.get('confirmPassword')) {
       setMessage('The passwords do not match. Please check them and try again.');
+      setMessageType('error');
       return;
     }
-    setMessage('Your form is ready. Account access will work once CareerIS is connected to its backend.');
+    if (!isRegister) {
+      setMessage('Sign-in is not connected yet. You can create an account now; sign-in is the next backend feature.');
+      setMessageType('info');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          role: role.toUpperCase(),
+          name: formData.get(isCompany ? 'companyName' : 'fullName'),
+          contactName: isCompany ? formData.get('contactName') : undefined,
+          email: formData.get('email'),
+          password: formData.get('password'),
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.message || 'We could not create your account. Please try again.');
+      }
+      setMessage(`Account created for ${result.email}. Sign-in will be available in the next step.`);
+      setMessageType('success');
+      form.reset();
+    } catch (error) {
+      setMessage(error.message || 'Could not reach CareerIS. Check that the backend and MongoDB are running.');
+      setMessageType('error');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -53,11 +89,11 @@ function AuthScreen({ mode, role, onModeChange, onRoleChange, onHome }) {
             <label>Password<input name="password" type="password" autoComplete={isRegister ? 'new-password' : 'current-password'} placeholder="At least 8 characters" minLength={8} required /></label>
             {isRegister && <label>Confirm password<input name="confirmPassword" type="password" autoComplete="new-password" placeholder="Enter your password again" minLength={8} required /></label>}
             {!isRegister && <a className="forgot-link" href="#forgot-password" onClick={(event) => { event.preventDefault(); setMessage('Password recovery will be available when account services are connected.'); }}>Forgot password?</a>}
-            <button className="button button-purple auth-submit" type="submit">{isRegister ? 'Create account' : 'Sign in'} <ArrowUpRight /></button>
-            {message && <p className="form-message" role="status">{message}</p>}
+            <button className="button button-purple auth-submit" type="submit" disabled={submitting}>{submitting ? 'Creating account…' : isRegister ? 'Create account' : 'Sign in'} <ArrowUpRight /></button>
+            {message && <p className={`form-message ${messageType}`} role="status">{message}</p>}
           </form>
           <p className="auth-switch">{isRegister ? 'Already have an account?' : 'New to CareerIS?'} <button type="button" onClick={() => onModeChange(isRegister ? 'sign-in' : 'register')}>{isRegister ? 'Sign in' : 'Create an account'}</button></p>
-          <p className="auth-note">This is the frontend account flow. Account creation and sign-in will be enabled after the backend is connected.</p>
+          <p className="auth-note">Your password is protected before it is saved. CareerIS will never show it in your profile.</p>
         </div>
         <footer className="auth-footer"><span>© 2026 CareerIS</span><span>Good beginnings, built together.</span></footer>
       </section>
