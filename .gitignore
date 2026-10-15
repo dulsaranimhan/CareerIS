@@ -1,0 +1,17 @@
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# Java / Maven
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Local configuration and uploaded files
+backend/.env
+backend/uploads/
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
