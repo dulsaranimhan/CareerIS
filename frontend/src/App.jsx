@@ -106,12 +106,110 @@ function AuthScreen({ mode, role, onModeChange, onRoleChange, onHome, onLogin })
   );
 }
 
+const emptyVacancy = () => ({ title: '', description: '', skills: '', location: '', workMode: 'HYBRID', deadline: '' });
+
+async function vacancyApi(path, token, options = {}) {
+  const response = await fetch(path, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      ...options.headers,
+    },
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.message || 'Could not complete that request. Please try again.');
+  return result;
+}
+
 function Dashboard({ session, onLogout, onHome }) {
   const isCompany = session.user.role === 'COMPANY';
   const firstName = session.user.name.split(' ')[0];
+  const [vacancies, setVacancies] = useState([]);
+  const [vacanciesLoading, setVacanciesLoading] = useState(isCompany);
+  const [vacancyError, setVacancyError] = useState('');
+  const [vacancyMessage, setVacancyMessage] = useState('');
+  const [editingId, setEditingId] = useState(null);
+  const [vacancyDraft, setVacancyDraft] = useState(emptyVacancy);
+  const [savingVacancy, setSavingVacancy] = useState(false);
+
+  async function loadVacancies() {
+    setVacanciesLoading(true);
+    setVacancyError('');
+    try {
+      setVacancies(await vacancyApi('/api/company/vacancies', session.accessToken));
+    } catch (error) {
+      setVacancyError(error.message);
+    } finally {
+      setVacanciesLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (isCompany) loadVacancies();
+  }, [isCompany, session.accessToken]);
+
+  const openVacancies = vacancies.filter((vacancy) => vacancy.status === 'OPEN').length;
   const metrics = isCompany
-    ? [{ label: 'Open vacancies', value: '0', icon: '▤' }, { label: 'Applications', value: '0', icon: '↗' }, { label: 'Interviews', value: '0', icon: '◷' }]
+    ? [{ label: 'Open vacancies', value: String(openVacancies), icon: '▤' }, { label: 'Applications', value: '0', icon: '↗' }, { label: 'Interviews', value: '0', icon: '◷' }]
     : [{ label: 'Applications', value: '0', icon: '↗' }, { label: 'Interviews', value: '0', icon: '◷' }, { label: 'Profile status', value: 'New', icon: '✳' }];
+
+  function startEditing(vacancy) {
+    setEditingId(vacancy.id);
+    setVacancyDraft({
+      title: vacancy.title,
+      description: vacancy.description,
+      skills: vacancy.skills.join(', '),
+      location: vacancy.location,
+      workMode: vacancy.workMode,
+      deadline: vacancy.deadline,
+    });
+    setVacancyMessage('');
+  }
+
+  function cancelEditing() {
+    setEditingId(null);
+    setVacancyDraft(emptyVacancy());
+  }
+
+  async function saveVacancy(event) {
+    event.preventDefault();
+    setSavingVacancy(true);
+    setVacancyError('');
+    setVacancyMessage('');
+    const payload = {
+      ...vacancyDraft,
+      skills: vacancyDraft.skills.split(',').map((skill) => skill.trim()).filter(Boolean),
+    };
+    try {
+      await vacancyApi(editingId ? `/api/company/vacancies/${editingId}` : '/api/company/vacancies', session.accessToken, {
+        method: editingId ? 'PUT' : 'POST',
+        body: JSON.stringify(payload),
+      });
+      setVacancyMessage(editingId ? 'Vacancy updated.' : 'Vacancy published. Students can now find it.');
+      cancelEditing();
+      await loadVacancies();
+    } catch (error) {
+      setVacancyError(error.message);
+    } finally {
+      setSavingVacancy(false);
+    }
+  }
+
+  async function toggleVacancyStatus(vacancy) {
+    setVacancyError('');
+    setVacancyMessage('');
+    try {
+      await vacancyApi(`/api/company/vacancies/${vacancy.id}/status`, session.accessToken, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: vacancy.status === 'OPEN' ? 'CLOSED' : 'OPEN' }),
+      });
+      setVacancyMessage(vacancy.status === 'OPEN' ? 'Vacancy closed.' : 'Vacancy reopened.');
+      await loadVacancies();
+    } catch (error) {
+      setVacancyError(error.message);
+    }
+  }
 
   return (
     <main className="dashboard-shell">
@@ -120,7 +218,37 @@ function Dashboard({ session, onLogout, onHome }) {
         <p className="eyebrow">{isCompany ? 'COMPANY WORKSPACE' : 'STUDENT WORKSPACE'}</p>
         <div className="dashboard-heading"><div><h1>Welcome, {firstName}.</h1><p>{isCompany ? 'Your company space is ready to meet its next intern.' : 'Your next chapter starts with a few small steps.'}</p></div><span className="dashboard-date">CAREERIS · {isCompany ? 'COMPANY' : 'STUDENT'}</span></div>
         <div className="dashboard-metrics">{metrics.map((metric) => <article className="dashboard-metric" key={metric.label}><span className="dashboard-metric-icon">{metric.icon}</span><span>{metric.label}</span><b>{metric.value}</b></article>)}</div>
-        <section className="dashboard-empty"><div className="empty-art"><span>✳</span><i /><i /><i /></div><p className="eyebrow">{isCompany ? 'READY WHEN YOU ARE' : 'YOUR JOURNEY STARTS HERE'}</p><h2>{isCompany ? 'Post your first internship.' : 'Let’s build your student profile.'}</h2><p>{isCompany ? 'Add your company details and create a vacancy to start receiving applications.' : 'Add your qualifications and upload your CV so companies can learn about you.'}</p><span className="dashboard-next-label">{isCompany ? 'NEXT UP: COMPANY PROFILE & VACANCIES' : 'NEXT UP: QUALIFICATIONS & CV'}</span></section>
+        {isCompany ? (
+          <section className="vacancy-workspace">
+            <div className="vacancy-section-heading"><div><p className="eyebrow">YOUR OPPORTUNITIES</p><h2>Vacancies</h2><p>Create a listing and invite students to apply.</p></div><button className="button button-purple vacancy-new-button" type="button" onClick={() => { cancelEditing(); setVacancyMessage(''); }}>＋ Post a vacancy</button></div>
+            {vacancyMessage && <p className="form-message success" role="status">{vacancyMessage}</p>}
+            {vacancyError && <p className="form-message error" role="alert">{vacancyError}</p>}
+            {editingId !== null && <p className="vacancy-editing-note">Editing a vacancy <button type="button" onClick={cancelEditing}>Cancel edit</button></p>}
+            <form className="vacancy-form" onSubmit={saveVacancy}>
+              <div className="vacancy-form-heading"><div><span className="vacancy-form-icon">✳</span><div><h3>{editingId ? 'Update vacancy' : 'Create a vacancy'}</h3><p>Share the details students need before applying.</p></div></div>{editingId && <button type="button" className="vacancy-cancel" onClick={cancelEditing}>Cancel</button>}</div>
+              <div className="vacancy-fields">
+                <label>Internship title<input value={vacancyDraft.title} onChange={(event) => setVacancyDraft({ ...vacancyDraft, title: event.target.value })} placeholder="e.g. Software Engineering Intern" maxLength="120" required /></label>
+                <label>Location<input value={vacancyDraft.location} onChange={(event) => setVacancyDraft({ ...vacancyDraft, location: event.target.value })} placeholder="e.g. Colombo or Remote" maxLength="120" required /></label>
+                <label>Work arrangement<select value={vacancyDraft.workMode} onChange={(event) => setVacancyDraft({ ...vacancyDraft, workMode: event.target.value })}><option value="ON_SITE">On-site</option><option value="HYBRID">Hybrid</option><option value="REMOTE">Remote</option></select></label>
+                <label>Application deadline<input type="date" min={new Date().toISOString().slice(0, 10)} value={vacancyDraft.deadline} onChange={(event) => setVacancyDraft({ ...vacancyDraft, deadline: event.target.value })} required /></label>
+                <label className="vacancy-wide">Skills <span>(comma separated)</span><input value={vacancyDraft.skills} onChange={(event) => setVacancyDraft({ ...vacancyDraft, skills: event.target.value })} placeholder="e.g. Java, communication, teamwork" required /></label>
+                <label className="vacancy-wide">Description<textarea value={vacancyDraft.description} onChange={(event) => setVacancyDraft({ ...vacancyDraft, description: event.target.value })} placeholder="Describe the work, what the intern will learn, and any requirements." rows="5" maxLength="5000" required /></label>
+              </div>
+              <div className="vacancy-form-footer"><span>Deadline must be today or later.</span><button className="button button-purple" type="submit" disabled={savingVacancy}>{savingVacancy ? 'Saving…' : editingId ? 'Save changes' : 'Publish vacancy'} <ArrowUpRight /></button></div>
+            </form>
+            <div className="vacancy-list-heading"><h3>Posted by your company</h3><span>{vacancies.length} {vacancies.length === 1 ? 'vacancy' : 'vacancies'}</span></div>
+            {vacanciesLoading ? <div className="vacancy-list-placeholder">Loading your vacancies…</div> : vacancies.length === 0 ? (
+              <div className="vacancy-list-placeholder"><div className="empty-art"><span>✳</span><i /><i /><i /></div><h3>Your first listing starts here.</h3><p>Post an internship and it will appear here and in the student vacancy feed.</p></div>
+            ) : <div className="vacancy-list">{vacancies.map((vacancy) => <article className={`vacancy-card ${vacancy.status === 'CLOSED' ? 'closed' : ''}`} key={vacancy.id}>
+              <div className="vacancy-card-top"><span className="company-mark lavender">{session.user.name.charAt(0).toUpperCase()}</span><span className={`vacancy-status ${vacancy.status.toLowerCase()}`}><i />{vacancy.status === 'OPEN' ? 'Open' : 'Closed'}</span></div>
+              <h3>{vacancy.title}</h3><p className="vacancy-company-name">{vacancy.companyName}</p>
+              <div className="vacancy-details"><span>⌖ {vacancy.location}</span><span>◷ {vacancy.workMode.replace('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase())}</span><span>Apply by {new Date(`${vacancy.deadline}T00:00:00`).toLocaleDateString()}</span></div>
+              <p className="vacancy-description">{vacancy.description}</p>
+              <div className="vacancy-skills">{vacancy.skills.map((skill) => <span className="category-pill" key={skill}>{skill}</span>)}</div>
+              <div className="vacancy-card-actions"><button type="button" className="vacancy-edit" onClick={() => startEditing(vacancy)}>Edit listing</button><button type="button" className={vacancy.status === 'OPEN' ? 'vacancy-close' : 'vacancy-reopen'} onClick={() => toggleVacancyStatus(vacancy)}>{vacancy.status === 'OPEN' ? 'Close vacancy' : 'Reopen vacancy'}</button></div>
+            </article>)}</div>}
+          </section>
+        ) : <section className="dashboard-empty"><div className="empty-art"><span>✳</span><i /><i /><i /></div><p className="eyebrow">YOUR JOURNEY STARTS HERE</p><h2>Let’s build your student profile.</h2><p>Add your qualifications and upload your CV so companies can learn about you.</p><span className="dashboard-next-label">NEXT UP: QUALIFICATIONS & CV</span></section>}
       </section>
       <footer className="dashboard-footer"><span>© 2026 CareerIS</span><button type="button" onClick={onHome}>Back to home</button></footer>
     </main>

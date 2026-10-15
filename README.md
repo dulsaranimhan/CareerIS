@@ -56,7 +56,19 @@ Example company request:
 
 The API returns `201 Created` with the account ID, name, email, role, and creation time. Duplicate emails return `409 Conflict`.
 
-`POST /api/auth/login` accepts a role, email, and password. On success it returns an eight-hour bearer token and the account details. The frontend keeps the token for the current browser session and opens the student or company dashboard based on the account role. Protected API routes require that token in an `Authorization: Bearer <token>` header. The dashboards are starter screens; profile, vacancy, and application features are still to be built.
+`POST /api/auth/login` accepts a role, email, and password. On success it returns an eight-hour bearer token and the account details. The frontend keeps the token for the current browser session and opens the student or company dashboard based on the account role. Protected API routes require that token in an `Authorization: Bearer <token>` header.
+
+## Company vacancies
+
+Companies can create and manage their own vacancies in the company dashboard. A vacancy includes a title, description, comma-separated skills, location, work arrangement (`ON_SITE`, `HYBRID`, or `REMOTE`), and an application deadline. Vacancies are saved in MongoDB, appear in the company's list, and can be edited, closed, or reopened. Only open vacancies are returned by the student feed.
+
+- `GET /api/company/vacancies` — list the signed-in company's vacancies
+- `POST /api/company/vacancies` — create a vacancy
+- `PUT /api/company/vacancies/{id}` — edit a vacancy owned by that company
+- `PATCH /api/company/vacancies/{id}/status` — change status to `OPEN` or `CLOSED`
+- `GET /api/vacancies` — list open vacancies for authenticated students and companies
+
+The API derives the company ID from the signed-in token. A company cannot edit or close another company's vacancy. Student browsing and applications are the next frontend milestone.
 
 ## Run locally
 
