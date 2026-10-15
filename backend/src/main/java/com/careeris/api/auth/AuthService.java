@@ -42,4 +42,13 @@ public class AuthService {
             throw new EmailAlreadyRegisteredException();
         }
     }
+
+    public UserAccount authenticate(LoginRequest request) {
+        String email = request.email().trim().toLowerCase(Locale.ROOT);
+        UserAccount account = users.findByEmailIgnoreCase(email)
+                .filter(candidate -> candidate.getRole() == request.role())
+                .filter(candidate -> passwordEncoder.matches(request.password(), candidate.getPasswordHash()))
+                .orElseThrow(InvalidCredentialsException::new);
+        return account;
+    }
 }

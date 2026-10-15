@@ -11,11 +11,11 @@ function ArrowUpRight() {
 }
 
 function authRouteFromHash() {
-  const match = window.location.hash.match(/^#(register|sign-in)(?:\/(student|company))?$/);
+  const match = window.location.hash.match(/^#(register|sign-in|dashboard)(?:\/(student|company))?$/);
   return match ? { mode: match[1], role: match[2] || 'student' } : null;
 }
 
-function AuthScreen({ mode, role, onModeChange, onRoleChange, onHome }) {
+function AuthScreen({ mode, role, onModeChange, onRoleChange, onHome, onLogin }) {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -32,30 +32,35 @@ function AuthScreen({ mode, role, onModeChange, onRoleChange, onHome }) {
       setMessageType('error');
       return;
     }
-    if (!isRegister) {
-      setMessage('Sign-in is not connected yet. You can create an account now; sign-in is the next backend feature.');
-      setMessageType('info');
-      return;
-    }
-
     setSubmitting(true);
     try {
-      const response = await fetch('/api/auth/register', {
+      const payload = isRegister
+        ? {
+            role: role.toUpperCase(),
+            name: formData.get(isCompany ? 'companyName' : 'fullName'),
+            contactName: isCompany ? formData.get('contactName') : undefined,
+            email: formData.get('email'),
+            password: formData.get('password'),
+          }
+        : {
+            role: role.toUpperCase(),
+            email: formData.get('email'),
+            password: formData.get('password'),
+          };
+      const response = await fetch(isRegister ? '/api/auth/register' : '/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          role: role.toUpperCase(),
-          name: formData.get(isCompany ? 'companyName' : 'fullName'),
-          contactName: isCompany ? formData.get('contactName') : undefined,
-          email: formData.get('email'),
-          password: formData.get('password'),
-        }),
+        body: JSON.stringify(payload),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(result.message || 'We could not create your account. Please try again.');
       }
-      setMessage(`Account created for ${result.email}. Sign-in will be available in the next step.`);
+      if (!isRegister) {
+        onLogin(result);
+        return;
+      }
+      setMessage(`Account created for ${result.email}. You can sign in now.`);
       setMessageType('success');
       form.reset();
     } catch (error) {
@@ -89,7 +94,7 @@ function AuthScreen({ mode, role, onModeChange, onRoleChange, onHome }) {
             <label>Password<input name="password" type="password" autoComplete={isRegister ? 'new-password' : 'current-password'} placeholder="At least 8 characters" minLength={8} required /></label>
             {isRegister && <label>Confirm password<input name="confirmPassword" type="password" autoComplete="new-password" placeholder="Enter your password again" minLength={8} required /></label>}
             {!isRegister && <a className="forgot-link" href="#forgot-password" onClick={(event) => { event.preventDefault(); setMessage('Password recovery will be available when account services are connected.'); }}>Forgot password?</a>}
-            <button className="button button-purple auth-submit" type="submit" disabled={submitting}>{submitting ? 'Creating account…' : isRegister ? 'Create account' : 'Sign in'} <ArrowUpRight /></button>
+            <button className="button button-purple auth-submit" type="submit" disabled={submitting}>{submitting ? isRegister ? 'Creating account…' : 'Signing in…' : isRegister ? 'Create account' : 'Sign in'} <ArrowUpRight /></button>
             {message && <p className={`form-message ${messageType}`} role="status">{message}</p>}
           </form>
           <p className="auth-switch">{isRegister ? 'Already have an account?' : 'New to CareerIS?'} <button type="button" onClick={() => onModeChange(isRegister ? 'sign-in' : 'register')}>{isRegister ? 'Sign in' : 'Create an account'}</button></p>
@@ -101,8 +106,43 @@ function AuthScreen({ mode, role, onModeChange, onRoleChange, onHome }) {
   );
 }
 
+function Dashboard({ session, onLogout, onHome }) {
+  const isCompany = session.user.role === 'COMPANY';
+  const firstName = session.user.name.split(' ')[0];
+  const metrics = isCompany
+    ? [{ label: 'Open vacancies', value: '0', icon: '▤' }, { label: 'Applications', value: '0', icon: '↗' }, { label: 'Interviews', value: '0', icon: '◷' }]
+    : [{ label: 'Applications', value: '0', icon: '↗' }, { label: 'Interviews', value: '0', icon: '◷' }, { label: 'Profile status', value: 'New', icon: '✳' }];
+
+  return (
+    <main className="dashboard-shell">
+      <header className="dashboard-topbar"><a className="brand" href="#top" onClick={(event) => { event.preventDefault(); onHome(); }}><span className="brand-symbol"><span /></span><span>Career<span className="brand-is">IS</span></span></a><div className="dashboard-account"><span className="dashboard-avatar">{firstName.charAt(0).toUpperCase()}</span><span><b>{session.user.name}</b><small>{isCompany ? 'Company account' : 'Student account'}</small></span><button type="button" onClick={onLogout}>Sign out</button></div></header>
+      <section className="dashboard-content">
+        <p className="eyebrow">{isCompany ? 'COMPANY WORKSPACE' : 'STUDENT WORKSPACE'}</p>
+        <div className="dashboard-heading"><div><h1>Welcome, {firstName}.</h1><p>{isCompany ? 'Your company space is ready to meet its next intern.' : 'Your next chapter starts with a few small steps.'}</p></div><span className="dashboard-date">CAREERIS · {isCompany ? 'COMPANY' : 'STUDENT'}</span></div>
+        <div className="dashboard-metrics">{metrics.map((metric) => <article className="dashboard-metric" key={metric.label}><span className="dashboard-metric-icon">{metric.icon}</span><span>{metric.label}</span><b>{metric.value}</b></article>)}</div>
+        <section className="dashboard-empty"><div className="empty-art"><span>✳</span><i /><i /><i /></div><p className="eyebrow">{isCompany ? 'READY WHEN YOU ARE' : 'YOUR JOURNEY STARTS HERE'}</p><h2>{isCompany ? 'Post your first internship.' : 'Let’s build your student profile.'}</h2><p>{isCompany ? 'Add your company details and create a vacancy to start receiving applications.' : 'Add your qualifications and upload your CV so companies can learn about you.'}</p><span className="dashboard-next-label">{isCompany ? 'NEXT UP: COMPANY PROFILE & VACANCIES' : 'NEXT UP: QUALIFICATIONS & CV'}</span></section>
+      </section>
+      <footer className="dashboard-footer"><span>© 2026 CareerIS</span><button type="button" onClick={onHome}>Back to home</button></footer>
+    </main>
+  );
+}
+
+function loadSession() {
+  try {
+    const saved = JSON.parse(window.sessionStorage.getItem('careeris.session'));
+    if (saved?.expiresAt && Date.parse(saved.expiresAt) <= Date.now()) {
+      window.sessionStorage.removeItem('careeris.session');
+      return null;
+    }
+    return saved;
+  } catch {
+    return null;
+  }
+}
+
 function App() {
   const [auth, setAuth] = useState(authRouteFromHash);
+  const [session, setSession] = useState(loadSession);
 
   useEffect(() => {
     const syncRoute = () => setAuth(authRouteFromHash());
@@ -121,8 +161,33 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  function saveSession(loginResponse) {
+    window.sessionStorage.setItem('careeris.session', JSON.stringify(loginResponse));
+    setSession(loginResponse);
+    openAuth('dashboard', loginResponse.user.role.toLowerCase());
+  }
+
+  function goHome() {
+    window.history.pushState(null, '', window.location.pathname);
+    setAuth(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function signOut() {
+    window.sessionStorage.removeItem('careeris.session');
+    const role = session?.user?.role?.toLowerCase() || 'student';
+    setSession(null);
+    openAuth('sign-in', role);
+  }
+
   if (auth) {
-    return <AuthScreen mode={auth.mode} role={auth.role} onModeChange={(mode) => openAuth(mode, auth.role)} onRoleChange={(role) => openAuth(auth.mode, role)} onHome={() => { window.history.pushState(null, '', window.location.pathname); setAuth(null); }} />;
+    if (auth.mode === 'dashboard') {
+      if (!session || session.user.role.toLowerCase() !== auth.role) {
+        return <AuthScreen mode="sign-in" role={auth.role} onModeChange={(mode) => openAuth(mode, auth.role)} onRoleChange={(role) => openAuth('sign-in', role)} onHome={goHome} onLogin={saveSession} />;
+      }
+      return <Dashboard session={session} onLogout={signOut} onHome={goHome} />;
+    }
+    return <AuthScreen mode={auth.mode} role={auth.role} onModeChange={(mode) => openAuth(mode, auth.role)} onRoleChange={(role) => openAuth(auth.mode, role)} onHome={goHome} onLogin={saveSession} />;
   }
 
   return (

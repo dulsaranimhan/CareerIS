@@ -54,13 +54,15 @@ Example company request:
 }
 ```
 
-The API returns `201 Created` with the account ID, name, email, role, and creation time. Duplicate emails return `409 Conflict`. Sign-in is a later step; other API routes remain closed until authentication is added.
+The API returns `201 Created` with the account ID, name, email, role, and creation time. Duplicate emails return `409 Conflict`.
+
+`POST /api/auth/login` accepts a role, email, and password. On success it returns an eight-hour bearer token and the account details. The frontend keeps the token for the current browser session and opens the student or company dashboard based on the account role. Protected API routes require that token in an `Authorization: Bearer <token>` header. The dashboards are starter screens; profile, vacancy, and application features are still to be built.
 
 ## Run locally
 
 Prerequisites: Node.js, Java 17 or newer, Maven, and MongoDB.
 
-Start MongoDB locally, then run the backend with `mvn spring-boot:run` from `backend/`. Run the frontend with `npm install` followed by `npm run dev` from `frontend/`.
+Start MongoDB locally, then run the backend with `mvn spring-boot:run` from `backend/`. For repeatable local sessions, set `JWT_SECRET` to a Base64-encoded key of at least 32 bytes before starting the backend (for example, generate one with `openssl rand -base64 32`). Without it, the backend creates a temporary key at startup and issued tokens stop working after a restart. Run the frontend with `npm install` followed by `npm run dev` from `frontend/`.
 
 ## Development plan
 
