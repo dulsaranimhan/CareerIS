@@ -68,7 +68,18 @@ Companies can create and manage their own vacancies in the company dashboard. A 
 - `PATCH /api/company/vacancies/{id}/status` — change status to `OPEN` or `CLOSED`
 - `GET /api/vacancies` — list open vacancies for authenticated students and companies
 
-The API derives the company ID from the signed-in token. A company cannot edit or close another company's vacancy. Student browsing and applications are the next frontend milestone.
+The API derives the company ID from the signed-in token. A company cannot edit or close another company's vacancy.
+
+## Student browsing and applications
+
+The student dashboard loads open vacancies and the student's application history. Students can search by title, company, skill, and location, filter by work arrangement, inspect details, and apply with an optional note. Applications are saved with a `SUBMITTED` status and a snapshot of the student and vacancy details. Duplicate applications are prevented, including by a MongoDB unique index. Applications after a deadline or to a closed vacancy are rejected.
+
+- `GET /api/vacancies` — list open vacancies with future deadlines
+- `GET /api/vacancies/{id}` — get an open vacancy
+- `GET /api/student/applications` — list the signed-in student's applications
+- `POST /api/student/applications` — apply with `vacancyId` and optional `coverLetter`
+
+Application status values include `SUBMITTED`, `UNDER_REVIEW`, `INTERVIEW`, `REJECTED`, and `WITHDRAWN`. At this stage, students can view their status; company application review and status changes are a future milestone.
 
 ## Run locally
 

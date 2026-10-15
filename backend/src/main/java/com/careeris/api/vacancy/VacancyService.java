@@ -1,6 +1,7 @@
 package com.careeris.api.vacancy;
 
 import java.util.List;
+import java.time.LocalDate;
 
 import com.careeris.api.auth.UserAccount;
 import com.careeris.api.auth.UserAccountRepository;
@@ -19,11 +20,23 @@ public class VacancyService {
     }
 
     public List<VacancyResponse> listOpen() {
-        return vacancies.findByStatusOrderByCreatedAtDesc(VacancyStatus.OPEN).stream().map(VacancyResponse::from).toList();
+        LocalDate today = LocalDate.now();
+        return vacancies.findByStatusOrderByCreatedAtDesc(VacancyStatus.OPEN).stream()
+                .filter(vacancy -> !vacancy.getDeadline().isBefore(today))
+                .map(VacancyResponse::from).toList();
     }
 
     public List<VacancyResponse> listForCompany(String companyId) {
         return vacancies.findByCompanyIdOrderByCreatedAtDesc(companyId).stream().map(VacancyResponse::from).toList();
+    }
+
+    public VacancyResponse getOpen(String vacancyId) {
+        Vacancy vacancy = vacancies.findByIdAndStatus(vacancyId, VacancyStatus.OPEN)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Open vacancy not found."));
+        if (vacancy.getDeadline().isBefore(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Open vacancy not found.");
+        }
+        return VacancyResponse.from(vacancy);
     }
 
     public VacancyResponse create(String companyId, VacancyRequest request) {

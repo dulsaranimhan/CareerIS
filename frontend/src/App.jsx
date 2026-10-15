@@ -122,6 +122,100 @@ async function vacancyApi(path, token, options = {}) {
   return result;
 }
 
+function StudentWorkspace({ session }) {
+  const [vacancies, setVacancies] = useState([]);
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [search, setSearch] = useState('');
+  const [workMode, setWorkMode] = useState('ALL');
+  const [view, setView] = useState('vacancies');
+  const [selectedVacancy, setSelectedVacancy] = useState(null);
+  const [coverLetter, setCoverLetter] = useState('');
+  const [applying, setApplying] = useState(false);
+
+  async function loadStudentData() {
+    setLoading(true);
+    setError('');
+    try {
+      const [openVacancies, myApplications] = await Promise.all([
+        vacancyApi('/api/vacancies', session.accessToken),
+        vacancyApi('/api/student/applications', session.accessToken),
+      ]);
+      setVacancies(openVacancies);
+      setApplications(myApplications);
+    } catch (loadError) {
+      setError(loadError.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { loadStudentData(); }, [session.accessToken]);
+
+  const appliedVacancyIds = new Set(applications.map((application) => application.vacancyId));
+  const normalizedSearch = search.trim().toLowerCase();
+  const filteredVacancies = vacancies.filter((vacancy) => {
+    const matchesSearch = !normalizedSearch || [vacancy.title, vacancy.companyName, vacancy.location, ...vacancy.skills]
+      .some((value) => value.toLowerCase().includes(normalizedSearch));
+    return matchesSearch && (workMode === 'ALL' || vacancy.workMode === workMode);
+  });
+  const interviewCount = applications.filter((application) => application.status === 'INTERVIEW').length;
+
+  async function submitApplication(event) {
+    event.preventDefault();
+    if (!selectedVacancy) return;
+    setApplying(true);
+    setError('');
+    setNotice('');
+    try {
+      await vacancyApi('/api/student/applications', session.accessToken, {
+        method: 'POST',
+        body: JSON.stringify({ vacancyId: selectedVacancy.id, coverLetter }),
+      });
+      setSelectedVacancy(null);
+      setCoverLetter('');
+      setNotice(`Your application for ${selectedVacancy.title} has been submitted.`);
+      await loadStudentData();
+      setView('applications');
+    } catch (applyError) {
+      setError(applyError.message);
+    } finally {
+      setApplying(false);
+    }
+  }
+
+  return <>
+    <div className="dashboard-metrics student-metrics">
+      <article className="dashboard-metric"><span className="dashboard-metric-icon">↗</span><span>Applications</span><b>{applications.length}</b></article>
+      <article className="dashboard-metric"><span className="dashboard-metric-icon">◷</span><span>Interviews</span><b>{interviewCount}</b></article>
+      <article className="dashboard-metric"><span className="dashboard-metric-icon">✳</span><span>Profile status</span><b>New</b></article>
+    </div>
+    <section className="student-workspace">
+      <div className="student-workspace-heading"><div><p className="eyebrow">YOUR NEXT OPPORTUNITY</p><h2>Find an internship</h2><p>Explore open roles and keep track of the ones you apply to.</p></div></div>
+      {notice && <p className="form-message success student-notice" role="status">{notice}</p>}
+      {error && <p className="form-message error student-notice" role="alert">{error}</p>}
+      <div className="student-tabs" role="tablist" aria-label="Student dashboard sections">
+        <button type="button" role="tab" aria-selected={view === 'vacancies'} className={view === 'vacancies' ? 'active' : ''} onClick={() => { setView('vacancies'); setNotice(''); }}>Browse vacancies <span>{vacancies.length}</span></button>
+        <button type="button" role="tab" aria-selected={view === 'applications'} className={view === 'applications' ? 'active' : ''} onClick={() => { setView('applications'); setNotice(''); }}>My applications <span>{applications.length}</span></button>
+      </div>
+      {view === 'vacancies' ? <>
+        <div className="vacancy-search-row"><label className="vacancy-search"><span>⌕</span><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search job title, company, skill, or location" aria-label="Search vacancies" /></label><label className="work-mode-filter"><span>Work arrangement</span><select value={workMode} onChange={(event) => setWorkMode(event.target.value)}><option value="ALL">All types</option><option value="ON_SITE">On-site</option><option value="HYBRID">Hybrid</option><option value="REMOTE">Remote</option></select></label></div>
+        {loading ? <div className="student-empty-state">Finding open internships…</div> : filteredVacancies.length === 0 ? <div className="student-empty-state"><div className="empty-art"><span>✳</span><i /><i /><i /></div><h3>{vacancies.length ? 'No vacancies match that search.' : 'New opportunities are on their way.'}</h3><p>{vacancies.length ? 'Try another job title, skill, location, or work arrangement.' : 'Check back soon as companies publish new internships.'}</p></div> : <div className="student-vacancy-grid">{filteredVacancies.map((vacancy) => <article className="student-vacancy-card" key={vacancy.id}>
+          <div className="student-vacancy-top"><span className="company-mark lavender">{vacancy.companyName.charAt(0).toUpperCase()}</span><span className="vacancy-status open"><i />Open</span></div>
+          <p className="company-name">{vacancy.companyName}</p><h3>{vacancy.title}</h3>
+          <div className="vacancy-details"><span>⌖ {vacancy.location}</span><span>◷ {vacancy.workMode.replace('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase())}</span></div>
+          <p className="student-vacancy-summary">{vacancy.description}</p>
+          <div className="vacancy-skills">{vacancy.skills.slice(0, 4).map((skill) => <span className="category-pill" key={skill}>{skill}</span>)}{vacancy.skills.length > 4 && <span className="category-pill">+{vacancy.skills.length - 4}</span>}</div>
+          <div className="student-vacancy-footer"><span>Apply by {new Date(`${vacancy.deadline}T00:00:00`).toLocaleDateString()}</span><button type="button" onClick={() => { setSelectedVacancy(vacancy); setCoverLetter(''); }}>View details <ArrowUpRight /></button></div>
+        </article>)}</div>}
+      </> : applications.length === 0 ? <div className="student-empty-state"><div className="empty-art"><span>↗</span><i /><i /><i /></div><h3>Your applications will show up here.</h3><p>Find an internship you like and submit your first application.</p><button className="button button-purple" type="button" onClick={() => setView('vacancies')}>Browse vacancies <ArrowUpRight /></button></div> : <div className="student-applications-list">{applications.map((application) => <article className="student-application-card" key={application.id}><span className="company-mark lavender">{application.companyName.charAt(0).toUpperCase()}</span><div className="student-application-info"><h3>{application.vacancyTitle}</h3><p>{application.companyName} · Applied {new Date(application.appliedAt).toLocaleDateString()}</p></div><span className={`application-status ${application.status.toLowerCase()}`}>{application.status.replace('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase())}</span></article>)}</div>}
+    </section>
+    {selectedVacancy && <div className="vacancy-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedVacancy(null); }}><section className="vacancy-modal" role="dialog" aria-modal="true" aria-labelledby="vacancy-modal-title"><button type="button" className="vacancy-modal-close" aria-label="Close vacancy details" onClick={() => setSelectedVacancy(null)}>×</button><span className="vacancy-status open"><i />Open</span><p className="company-name">{selectedVacancy.companyName}</p><h2 id="vacancy-modal-title">{selectedVacancy.title}</h2><div className="vacancy-details"><span>⌖ {selectedVacancy.location}</span><span>◷ {selectedVacancy.workMode.replace('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase())}</span><span>Apply by {new Date(`${selectedVacancy.deadline}T00:00:00`).toLocaleDateString()}</span></div><h3>About this internship</h3><p className="vacancy-modal-description">{selectedVacancy.description}</p><h3>Skills and qualifications</h3><div className="vacancy-skills">{selectedVacancy.skills.map((skill) => <span className="category-pill" key={skill}>{skill}</span>)}</div>{appliedVacancyIds.has(selectedVacancy.id) ? <p className="form-message info">You have already applied for this vacancy. Check My applications for updates.</p> : <form className="student-apply-form" onSubmit={submitApplication}><label>Short note to the company <span>(optional)</span><textarea value={coverLetter} onChange={(event) => setCoverLetter(event.target.value)} rows="4" maxLength="3000" placeholder="Tell the company why this internship interests you." /></label><button className="button button-purple" type="submit" disabled={applying}>{applying ? 'Submitting…' : 'Submit application'} <ArrowUpRight /></button></form>}</section></div>}
+  </>;
+}
+
 function Dashboard({ session, onLogout, onHome }) {
   const isCompany = session.user.role === 'COMPANY';
   const firstName = session.user.name.split(' ')[0];
@@ -150,9 +244,7 @@ function Dashboard({ session, onLogout, onHome }) {
   }, [isCompany, session.accessToken]);
 
   const openVacancies = vacancies.filter((vacancy) => vacancy.status === 'OPEN').length;
-  const metrics = isCompany
-    ? [{ label: 'Open vacancies', value: String(openVacancies), icon: '▤' }, { label: 'Applications', value: '0', icon: '↗' }, { label: 'Interviews', value: '0', icon: '◷' }]
-    : [{ label: 'Applications', value: '0', icon: '↗' }, { label: 'Interviews', value: '0', icon: '◷' }, { label: 'Profile status', value: 'New', icon: '✳' }];
+  const metrics = [{ label: 'Open vacancies', value: String(openVacancies), icon: '▤' }, { label: 'Applications', value: '0', icon: '↗' }, { label: 'Interviews', value: '0', icon: '◷' }];
 
   function startEditing(vacancy) {
     setEditingId(vacancy.id);
@@ -217,7 +309,7 @@ function Dashboard({ session, onLogout, onHome }) {
       <section className="dashboard-content">
         <p className="eyebrow">{isCompany ? 'COMPANY WORKSPACE' : 'STUDENT WORKSPACE'}</p>
         <div className="dashboard-heading"><div><h1>Welcome, {firstName}.</h1><p>{isCompany ? 'Your company space is ready to meet its next intern.' : 'Your next chapter starts with a few small steps.'}</p></div><span className="dashboard-date">CAREERIS · {isCompany ? 'COMPANY' : 'STUDENT'}</span></div>
-        <div className="dashboard-metrics">{metrics.map((metric) => <article className="dashboard-metric" key={metric.label}><span className="dashboard-metric-icon">{metric.icon}</span><span>{metric.label}</span><b>{metric.value}</b></article>)}</div>
+        {isCompany && <div className="dashboard-metrics">{metrics.map((metric) => <article className="dashboard-metric" key={metric.label}><span className="dashboard-metric-icon">{metric.icon}</span><span>{metric.label}</span><b>{metric.value}</b></article>)}</div>}
         {isCompany ? (
           <section className="vacancy-workspace">
             <div className="vacancy-section-heading"><div><p className="eyebrow">YOUR OPPORTUNITIES</p><h2>Vacancies</h2><p>Create a listing and invite students to apply.</p></div><button className="button button-purple vacancy-new-button" type="button" onClick={() => { cancelEditing(); setVacancyMessage(''); }}>＋ Post a vacancy</button></div>
@@ -248,7 +340,7 @@ function Dashboard({ session, onLogout, onHome }) {
               <div className="vacancy-card-actions"><button type="button" className="vacancy-edit" onClick={() => startEditing(vacancy)}>Edit listing</button><button type="button" className={vacancy.status === 'OPEN' ? 'vacancy-close' : 'vacancy-reopen'} onClick={() => toggleVacancyStatus(vacancy)}>{vacancy.status === 'OPEN' ? 'Close vacancy' : 'Reopen vacancy'}</button></div>
             </article>)}</div>}
           </section>
-        ) : <section className="dashboard-empty"><div className="empty-art"><span>✳</span><i /><i /><i /></div><p className="eyebrow">YOUR JOURNEY STARTS HERE</p><h2>Let’s build your student profile.</h2><p>Add your qualifications and upload your CV so companies can learn about you.</p><span className="dashboard-next-label">NEXT UP: QUALIFICATIONS & CV</span></section>}
+        ) : <StudentWorkspace session={session} />}
       </section>
       <footer className="dashboard-footer"><span>© 2026 CareerIS</span><button type="button" onClick={onHome}>Back to home</button></footer>
     </main>

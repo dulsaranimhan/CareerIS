@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/health", "/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers("/api/company/**").hasRole("COMPANY")
+                        .requestMatchers("/api/student/**").hasRole("STUDENT")
                         .requestMatchers("/api/vacancies/**").hasAnyRole("STUDENT", "COMPANY")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
