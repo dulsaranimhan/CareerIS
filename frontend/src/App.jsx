@@ -118,7 +118,16 @@ async function vacancyApi(path, token, options = {}) {
     },
   });
   const result = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(result.message || 'Could not complete that request. Please try again.');
+  if (!response.ok) {
+    const statusMessage = response.status === 401 ? 'Your sign-in expired. Sign in again, then retry.'
+      : response.status === 403 ? 'This action needs a company account. Sign in with your company account and retry.'
+      : response.status === 404 ? 'CareerIS could not find this API route. Restart the backend from the latest project files.'
+      : response.status === 400 ? `Some vacancy details are invalid. Check the fields and try again${result.error ? ` (${result.error})` : ''}.`
+      : response.status === 503 ? 'MongoDB is unavailable. Start MongoDB and retry.'
+      : response.status >= 500 ? `The backend could not complete the request (HTTP ${response.status}). Check the backend Terminal for the error.`
+      : `Request failed (HTTP ${response.status}${result.error ? ` ${result.error}` : ''}).`;
+    throw new Error(result.message || statusMessage);
+  }
   return result;
 }
 
