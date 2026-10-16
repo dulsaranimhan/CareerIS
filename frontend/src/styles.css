@@ -30,3 +30,137 @@
 /* Dashboard layouts use the available screen width and keep readable type sizes. */
 .dashboard-topbar{padding:0 max(32px,calc((100vw - 1620px)/2))}.dashboard-content{width:min(1620px,calc(100% - 64px));padding:54px 0 72px}.dashboard-footer{padding:0 max(32px,calc((100vw - 1620px)/2));font-size:12px}.dashboard-account{gap:12px}.dashboard-avatar{width:42px;height:42px;font-size:16px}.dashboard-account b{font-size:13px}.dashboard-account small{font-size:11px}.dashboard-account button,.dashboard-footer button{padding:9px 13px;font-size:12px}.dashboard-content>.eyebrow{font-size:11px;letter-spacing:1.2px}.dashboard-heading{margin-bottom:30px}.dashboard-heading h1{font-size:40px;letter-spacing:-1.5px}.dashboard-heading p{font-size:15px}.dashboard-date{padding:9px 12px;font-size:10px}.dashboard-metrics{gap:16px}.dashboard-metric{min-height:130px;padding:22px;font-size:13px}.dashboard-metric-icon{width:36px;height:36px;border-radius:10px;font-size:18px}.dashboard-metric>b{margin-top:18px;font-size:29px}.vacancy-workspace,.student-workspace{margin-top:20px;padding:32px}.vacancy-section-heading,.student-workspace-heading{margin-bottom:25px}.vacancy-section-heading .eyebrow,.student-workspace-heading .eyebrow{font-size:10px;letter-spacing:1.2px}.vacancy-section-heading h2,.student-workspace-heading h2{font-size:29px;letter-spacing:-.7px}.vacancy-section-heading p:not(.eyebrow),.student-workspace-heading p:not(.eyebrow){font-size:14px}.vacancy-new-button{height:48px;padding:0 20px;font-size:13px}.vacancy-form{margin:20px 0 34px;padding:26px}.vacancy-form-icon{width:42px;height:42px;font-size:19px}.vacancy-form-heading h3{font-size:17px}.vacancy-form-heading p{font-size:12px}.vacancy-fields{gap:18px;margin-top:24px}.vacancy-fields label{gap:8px;font-size:12px}.vacancy-fields input,.vacancy-fields select{height:47px}.vacancy-fields input,.vacancy-fields select,.vacancy-fields textarea{padding:11px 13px;font-size:13px}.vacancy-fields textarea{min-height:110px}.vacancy-form-footer{margin-top:20px}.vacancy-form-footer>span{font-size:11px}.vacancy-form-footer .button{height:46px;padding:0 17px;font-size:12px}.vacancy-list-heading h3{font-size:16px}.vacancy-list-heading>span{font-size:12px}.vacancy-list{gap:16px;margin-top:18px}.vacancy-card{padding:22px}.vacancy-card .company-mark,.student-vacancy-top .company-mark{width:44px;height:44px;font-size:17px}.vacancy-status{padding:7px 10px;font-size:11px}.vacancy-card h3,.student-vacancy-card h3{font-size:19px}.vacancy-company-name,.student-vacancy-card>.company-name{font-size:13px}.vacancy-details{gap:9px 17px;margin:15px 0;font-size:12px}.vacancy-description,.student-vacancy-summary{min-height:48px;font-size:12px;line-height:1.65}.vacancy-skills{gap:7px;margin-top:14px}.vacancy-skills .category-pill{padding:6px 9px;font-size:11px}.vacancy-card-actions{gap:9px;margin-top:18px;padding-top:15px}.vacancy-card-actions button{padding:9px 12px;font-size:11px}.vacancy-list-placeholder{min-height:215px;font-size:12px}.vacancy-list-placeholder h3{font-size:16px}.vacancy-list-placeholder p{font-size:12px}.company-review-section{margin-top:38px;padding-top:30px}.company-review-section .vacancy-list-heading h3{font-size:20px}.company-review-section .vacancy-list-heading p{font-size:12px}.review-filter{gap:10px;font-size:11px}.review-filter select{height:40px;padding:0 12px;font-size:11px}.company-application-list{gap:14px;margin-top:18px}.company-application-card{padding:20px}.company-application-main{gap:14px}.company-application-main>.company-mark{width:46px;height:46px;font-size:17px}.company-application-identity h4{font-size:15px}.company-application-identity>a{font-size:12px}.company-application-identity>p{font-size:11px}.application-status{padding:7px 10px;font-size:11px}.company-application-note{margin:16px 0 0 60px;padding:13px 15px}.company-application-note>b{font-size:11px}.company-application-note>p{font-size:12px;line-height:1.65}.company-review-actions{margin:15px 0 0 60px}.company-review-actions>span{font-size:11px}.company-review-actions>div{gap:8px}.company-review-actions button{padding:9px 12px;font-size:11px}.student-metrics{margin-bottom:20px}.student-tabs{gap:22px;margin-top:23px}.student-tabs button{gap:9px;padding-bottom:14px;font-size:12px}.student-tabs button span{min-width:21px;padding:4px 7px;font-size:10px}.vacancy-search-row{grid-template-columns:1fr 260px;gap:14px;margin:20px 0}.vacancy-search{height:48px;padding:0 14px}.vacancy-search>span{font-size:24px}.vacancy-search input{font-size:12px}.work-mode-filter{gap:9px;padding:0 12px;font-size:11px}.work-mode-filter select{font-size:11px}.student-vacancy-grid{gap:16px}.student-vacancy-card{padding:22px}.student-vacancy-card>.company-name{margin:16px 0 6px}.student-vacancy-card .vacancy-details{margin:13px 0}.student-vacancy-footer{margin-top:17px;padding-top:14px}.student-vacancy-footer>span{font-size:11px}.student-vacancy-footer button{padding:9px 12px;font-size:11px}.student-empty-state{min-height:240px;font-size:12px}.student-empty-state h3{font-size:17px}.student-empty-state p{font-size:12px}.student-applications-list{gap:12px;padding-top:18px}.student-application-card{gap:14px;padding:17px}.student-application-card>.company-mark{width:44px;height:44px;font-size:17px}.student-application-info h3{font-size:14px}.student-application-info p{font-size:11px}.student-applications-toolbar{margin-top:18px;padding:13px 15px;font-size:12px}.student-applications-toolbar button{padding:8px 11px;font-size:10px}.vacancy-modal{padding:34px}.vacancy-modal>.company-name{font-size:13px}.vacancy-modal h2{font-size:30px}.vacancy-modal h3{font-size:14px}.vacancy-modal-description{font-size:13px}.student-apply-form label{font-size:12px}.student-apply-form textarea{font-size:12px}.student-apply-form .button{height:44px;padding:0 17px;font-size:12px}
 @media(max-width:700px){.dashboard-topbar{padding:0 5%}.dashboard-content{width:90%;padding:36px 0 45px}.dashboard-footer{padding:0 5%}.dashboard-heading h1{font-size:29px}.dashboard-metric{min-height:90px;padding:17px;font-size:11px}.dashboard-metric>b{margin-top:9px;font-size:23px}.dashboard-metric-icon{width:31px;height:31px}.vacancy-workspace,.student-workspace{padding:17px}.vacancy-form{padding:16px}.vacancy-section-heading h2,.student-workspace-heading h2{font-size:23px}.vacancy-fields{gap:13px}.vacancy-fields label{font-size:11px}.vacancy-fields input,.vacancy-fields select,.vacancy-fields textarea{font-size:12px}.vacancy-form-heading h3{font-size:15px}.vacancy-form-heading p{font-size:10px}.vacancy-card{padding:17px}.vacancy-card h3,.student-vacancy-card h3{font-size:16px}.vacancy-details{font-size:10px}.vacancy-description,.student-vacancy-summary{font-size:11px}.vacancy-card-actions button{font-size:10px}.company-review-section .vacancy-list-heading h3{font-size:17px}.company-application-card{padding:15px}.company-application-identity h4{font-size:13px}.company-application-identity>a{font-size:10px}.company-application-identity>p{font-size:10px}.company-application-note>p{font-size:11px}.company-review-actions button{font-size:10px}.vacancy-search-row{grid-template-columns:1fr}.vacancy-search{height:43px}.vacancy-search input{font-size:11px}.student-vacancy-footer>span{font-size:9px}.student-vacancy-footer button{font-size:10px}.student-application-info h3{font-size:12px}.student-application-info p{font-size:9px}.vacancy-modal{padding:25px 19px}.vacancy-modal h2{font-size:23px}.vacancy-modal h3{font-size:12px}.vacancy-modal-description{font-size:11px}}
+
+/* Bring the public and account pages onto the same spacious, readable scale as the dashboards. */
+.site-shell{max-width:1800px}
+.topbar{height:86px;padding:0 5%}
+.brand{font-size:21px;gap:12px}
+.brand-symbol{width:35px;height:35px;border-radius:11px}
+.brand-symbol:before{top:11px;left:11px}
+.brand-symbol:after{bottom:11px;right:11px}
+.brand-symbol span{top:11px;left:16px}
+.main-nav{gap:40px}
+.main-nav a,.sign-in{font-size:14px}
+.nav-actions{gap:28px}
+.button{min-height:49px;padding:0 22px;font-size:13px}
+.arrow-up-right{font-size:17px}
+.hero{min-height:700px}
+.hero-inner{width:min(1500px,90%);grid-template-columns:.95fr 1.05fr;gap:58px;padding:76px 0 48px}
+.eyebrow{font-size:11px;letter-spacing:1.8px}
+.hero h1{font-size:clamp(54px,5vw,76px);letter-spacing:-3px}
+.hero-description{max-width:530px;font-size:16px;line-height:1.75}
+.hero-ctas{gap:14px;margin-top:28px}
+.hero-proof{gap:14px;margin-top:38px}
+.proof-avatars i{width:31px;height:31px;font-size:10px}
+.hero-proof p{font-size:12px}
+.hero-visual{height:460px}
+.preview-window{width:min(650px,100%);min-height:345px;border-radius:17px}
+.preview-topline{height:49px;gap:13px;padding:0 20px}
+.preview-brand{gap:8px;font-size:13px}
+.mini-brand-mark{width:22px;height:22px;border-radius:7px;font-size:12px}
+.preview-greeting{font-size:9px}
+.preview-avatar{width:27px;height:27px;font-size:10px}
+.preview-content{padding:20px 22px 18px}
+.preview-welcome{margin-bottom:16px}
+.preview-kicker{font-size:8px}
+.preview-welcome h3{font-size:18px}
+.welcome-spark{width:36px;height:36px;font-size:20px}
+.preview-stats{gap:10px}
+.preview-stat{min-height:90px;padding:12px}
+.stat-icon{width:23px;height:23px;font-size:12px}
+.stat-label{font-size:9px}
+.preview-stat>b{margin-top:9px;font-size:20px}
+.preview-stat small{font-size:8px}
+.preview-bottom{gap:10px;margin-top:11px}
+.preview-activity,.preview-next{height:119px;padding:13px}
+.preview-section-title b{font-size:10px}
+.preview-section-title span,.next-label{font-size:8px}
+.activity-chart{height:58px}
+.chart-days{font-size:7px}
+.next-company{gap:8px;margin-top:11px}
+.next-logo{width:28px;height:28px;font-size:12px}
+.next-company b{font-size:9px}
+.next-company small{font-size:8px}
+.next-status{gap:6px;margin-top:12px;padding:7px;font-size:8px}
+.float-card{gap:10px;min-width:190px;padding:12px 14px;border-radius:11px}
+.float-card b{font-size:10px}
+.float-card small{font-size:9px}
+.float-icon{width:31px;height:31px}
+.float-count{font-size:13px}
+.match-check{width:27px;height:27px}
+.float-new{right:-24px;top:43px}
+.float-match{left:-25px;bottom:40px}
+.hero-bottom{min-height:58px;gap:18px;font-size:9px}
+.trust-line{gap:10px;font-size:11px}
+.hero-bottom>a{font-size:10px}
+.section-wrap{width:min(1500px,90%)}
+.opportunities{padding:88px 0 92px}
+.section-heading{margin-bottom:28px}
+.section-heading .eyebrow{margin-bottom:10px}
+.section-heading h2{font-size:38px;letter-spacing:-1.6px}
+.text-link{gap:10px;font-size:13px}
+.internship-grid{gap:17px}
+.internship-card{min-height:220px;padding:22px;border-radius:12px}
+.company-mark{width:42px;height:42px;border-radius:11px;font-size:17px}
+.listing-age{font-size:10px}
+.company-name{margin:15px 0 6px;font-size:12px}
+.internship-card h3{font-size:17px}
+.listing-detail{font-size:12px}
+.listing-footer{margin-top:18px;padding-top:14px}
+.category-pill{padding:6px 9px;font-size:10px}
+.listing-footer>a{font-size:17px}
+.split-section{gap:20px;padding:8px 0 92px}
+.split-card{min-height:300px;padding:32px 35px;border-radius:15px}
+.split-icon{width:40px;height:40px;margin-bottom:20px;font-size:20px}
+.split-card .eyebrow{margin-bottom:10px;font-size:10px}
+.split-card h2{font-size:33px;letter-spacing:-1.3px}
+.split-card>p:not(.eyebrow){max-width:440px;margin:13px 0 16px;font-size:14px;line-height:1.75}
+.split-card .text-link{font-size:12px}
+.split-decoration{font-size:52px}
+.company-stamp{width:88px;height:88px;font-size:9px}
+.closing-cta{padding:72px 24px 78px}
+.closing-cta .eyebrow{margin-bottom:13px}
+.closing-cta h2{font-size:46px;letter-spacing:-2px}
+.closing-cta>p:not(.eyebrow){max-width:600px;margin-top:13px;font-size:14px;line-height:1.75}
+.closing-cta .hero-ctas{margin-top:26px}
+.cta-decoration{font-size:28px}
+.site-footer{min-height:86px;gap:20px;padding:0 5%;font-size:12px}
+.site-footer .brand{font-size:17px}
+.site-footer .brand-symbol{width:29px;height:29px;border-radius:9px}
+.site-footer .brand-symbol:before{top:9px;left:9px}
+.site-footer .brand-symbol:after{bottom:9px;right:9px}
+.site-footer .brand-symbol span{top:9px;left:13px}
+.site-footer>div{gap:25px}
+.site-footer small{font-size:10px}
+.auth-shell{grid-template-columns:minmax(480px,.9fr) minmax(620px,1.1fr)}
+.auth-art-message>span{width:58px;height:58px;margin-bottom:28px;border-radius:18px;font-size:22px}
+.auth-art-message strong{font-size:44px;letter-spacing:-2px}
+.auth-art-message small{margin-top:19px;font-size:12px}
+.auth-art-note{gap:12px;padding:14px 18px}
+.auth-art-note-icon{width:34px;height:34px}
+.auth-art-note b{font-size:12px}
+.auth-art-note small{font-size:10px}
+.auth-panel{padding:35px 6.5% 26px}
+.auth-content{width:min(580px,100%)}
+.auth-back{gap:10px;margin-bottom:34px;font-size:13px}
+.auth-content>.eyebrow{margin-bottom:11px;font-size:11px}
+.auth-content h1{font-size:40px;letter-spacing:-1.6px}
+.auth-intro{margin:10px 0 25px;font-size:15px;line-height:1.65}
+.account-type{gap:9px;margin-bottom:21px;padding:5px;border-radius:11px}
+.account-type button{height:47px;gap:9px;border-radius:8px;font-size:13px}
+.account-type button span{font-size:17px}
+.auth-form{gap:16px}
+.auth-form label{gap:8px;font-size:12px}
+.auth-form input{height:51px;padding:0 15px;border-radius:8px;font-size:13px}
+.forgot-link{margin-top:-6px;font-size:12px}
+.auth-submit{height:52px;margin-top:3px;font-size:14px}
+.form-message{padding:12px 14px;border-radius:8px;font-size:12px}
+.auth-switch{margin-top:21px;font-size:13px}
+.auth-switch button{font-size:13px}
+.auth-note{margin-top:24px;padding-top:16px;font-size:10px}
+.auth-footer{font-size:10px}
+@media(max-width:1200px){.hero-inner{width:90%;gap:25px}.section-wrap{width:90%}.auth-shell{grid-template-columns:minmax(400px,.9fr) minmax(540px,1.1fr)}.auth-content{width:min(520px,100%)}}
+@media(max-width:950px){.topbar{padding:0 4%}.main-nav{gap:20px}.hero-inner{width:90%;grid-template-columns:.9fr 1.1fr;gap:15px}.hero h1{font-size:50px}.hero-visual{transform:scale(.92)}.float-new{right:-2px}.float-match{left:-4px}.section-wrap{width:90%}.hero-bottom>a{right:4%}.auth-shell{grid-template-columns:minmax(360px,.85fr) minmax(480px,1.15fr)}.auth-content{width:min(460px,100%)}}
+@media(max-width:800px){.auth-shell{grid-template-columns:1fr}.auth-art{display:none}.auth-panel{min-height:100vh;padding:25px 6% 22px}.auth-content{width:min(560px,100%);margin:45px auto}.auth-back{margin-bottom:27px}}
+@media(max-width:700px){.topbar{height:68px;padding:0 5%}.brand{font-size:19px}.brand-symbol{width:32px;height:32px}.brand-symbol:before{top:10px;left:10px}.brand-symbol:after{bottom:10px;right:10px}.brand-symbol span{top:10px;left:14px}.main-nav,.nav-actions{display:none}.mobile-join{display:inline-flex;align-items:center;gap:8px;font-size:13px}.hero{min-height:0}.hero-inner{width:88%;grid-template-columns:1fr;gap:10px;padding:50px 0 28px}.hero-copy{text-align:center}.hero-copy .eyebrow,.hero-ctas,.hero-proof{justify-content:center}.hero-copy .eyebrow{font-size:10px}.hero h1{font-size:clamp(42px,10vw,58px)}.hero-description{max-width:440px;margin:0 auto;font-size:14px}.hero-ctas{gap:10px}.hero-ctas .button{min-height:44px;padding:0 15px;font-size:11px}.hero-proof{margin-top:22px}.hero-proof p{font-size:10px}.hero-visual{height:330px;transform:none}.preview-window{width:min(480px,94%)}.orbit-a{width:340px;height:205px}.orbit-b{width:400px;height:250px}.float-new{right:0;top:21px}.float-match{left:0;bottom:20px}.hero-bottom{min-height:50px;gap:9px}.hero-bottom>span{font-size:6px}.trust-line{gap:5px;font-size:8px}.hero-bottom>a{display:none}.opportunities{padding:56px 0}.section-heading h2{font-size:25px}.section-heading>.text-link{font-size:8px}.internship-grid{grid-template-columns:1fr}.internship-card{min-height:160px}.split-section{grid-template-columns:1fr;padding-bottom:55px}.split-card{min-height:220px}.closing-cta{padding:50px 18px}.closing-cta h2{font-size:31px}.site-footer{padding:16px 5%;flex-wrap:wrap}.site-footer>span{display:none}.auth-panel{padding:22px 6% 18px}.auth-content{margin:35px auto}.auth-content h1{font-size:29px}.auth-intro{font-size:13px}.auth-form label{font-size:11px}.auth-form input{height:46px;font-size:12px}.account-type button{height:42px;font-size:12px}.auth-submit{height:48px;font-size:13px}.auth-back{margin-bottom:23px;font-size:12px}.auth-note{font-size:9px}}
+@media(max-width:420px){.hero-inner{padding-top:39px}.hero h1{letter-spacing:-2px}.hero-ctas{gap:8px}.hero-ctas .button{padding:0 12px;font-size:10px}.hero-visual{height:280px}.preview-window{transform:scale(.94) rotate(-1deg)}.float-card{min-width:150px;padding:8px}.float-new{right:-7px}.float-match{left:-7px}.hero-bottom{flex-wrap:wrap;padding:9px 0}.hero-bottom>span{display:none}.section-heading{align-items:start;gap:14px;flex-direction:column}.section-heading h2{font-size:26px}.section-heading>.text-link{font-size:9px}.site-footer>div{gap:12px}.site-footer small{margin-left:auto}.auth-content h1{font-size:27px}.auth-panel{padding-right:6%;padding-left:6%}.auth-content{margin:30px auto}.auth-back{margin-bottom:20px}}
