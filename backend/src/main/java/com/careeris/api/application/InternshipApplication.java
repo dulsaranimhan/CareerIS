@@ -60,4 +60,8 @@ public class InternshipApplication {
     public ApplicationStatus getStatus() { return status; }
     public Instant getAppliedAt() { return appliedAt; }
     public Instant getUpdatedAt() { return updatedAt; }
+    public void setStatus(ApplicationStatus status) {
+        this.status = status;
+        this.updatedAt = Instant.now();
+    }
 }

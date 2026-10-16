@@ -200,6 +200,7 @@ function StudentWorkspace({ session }) {
         <button type="button" role="tab" aria-selected={view === 'vacancies'} className={view === 'vacancies' ? 'active' : ''} onClick={() => { setView('vacancies'); setNotice(''); }}>Browse vacancies <span>{vacancies.length}</span></button>
         <button type="button" role="tab" aria-selected={view === 'applications'} className={view === 'applications' ? 'active' : ''} onClick={() => { setView('applications'); setNotice(''); }}>My applications <span>{applications.length}</span></button>
       </div>
+      {view === 'applications' && <div className="student-applications-toolbar"><span>Your application progress</span><button type="button" onClick={loadStudentData} disabled={loading}>{loading ? 'Refreshing…' : 'Refresh status ↻'}</button></div>}
       {view === 'vacancies' ? <>
         <div className="vacancy-search-row"><label className="vacancy-search"><span>⌕</span><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search job title, company, skill, or location" aria-label="Search vacancies" /></label><label className="work-mode-filter"><span>Work arrangement</span><select value={workMode} onChange={(event) => setWorkMode(event.target.value)}><option value="ALL">All types</option><option value="ON_SITE">On-site</option><option value="HYBRID">Hybrid</option><option value="REMOTE">Remote</option></select></label></div>
         {loading ? <div className="student-empty-state">Finding open internships…</div> : filteredVacancies.length === 0 ? <div className="student-empty-state"><div className="empty-art"><span>✳</span><i /><i /><i /></div><h3>{vacancies.length ? 'No vacancies match that search.' : 'New opportunities are on their way.'}</h3><p>{vacancies.length ? 'Try another job title, skill, location, or work arrangement.' : 'Check back soon as companies publish new internships.'}</p></div> : <div className="student-vacancy-grid">{filteredVacancies.map((vacancy) => <article className="student-vacancy-card" key={vacancy.id}>
@@ -220,18 +221,26 @@ function Dashboard({ session, onLogout, onHome }) {
   const isCompany = session.user.role === 'COMPANY';
   const firstName = session.user.name.split(' ')[0];
   const [vacancies, setVacancies] = useState([]);
+  const [companyApplications, setCompanyApplications] = useState([]);
   const [vacanciesLoading, setVacanciesLoading] = useState(isCompany);
   const [vacancyError, setVacancyError] = useState('');
   const [vacancyMessage, setVacancyMessage] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [vacancyDraft, setVacancyDraft] = useState(emptyVacancy);
   const [savingVacancy, setSavingVacancy] = useState(false);
+  const [statusSavingId, setStatusSavingId] = useState('');
+  const [reviewFilter, setReviewFilter] = useState('ALL');
 
   async function loadVacancies() {
     setVacanciesLoading(true);
     setVacancyError('');
     try {
-      setVacancies(await vacancyApi('/api/company/vacancies', session.accessToken));
+      const [companyVacancies, applications] = await Promise.all([
+        vacancyApi('/api/company/vacancies', session.accessToken),
+        vacancyApi('/api/company/applications', session.accessToken),
+      ]);
+      setVacancies(companyVacancies);
+      setCompanyApplications(applications);
     } catch (error) {
       setVacancyError(error.message);
     } finally {
@@ -244,7 +253,9 @@ function Dashboard({ session, onLogout, onHome }) {
   }, [isCompany, session.accessToken]);
 
   const openVacancies = vacancies.filter((vacancy) => vacancy.status === 'OPEN').length;
-  const metrics = [{ label: 'Open vacancies', value: String(openVacancies), icon: '▤' }, { label: 'Applications', value: '0', icon: '↗' }, { label: 'Interviews', value: '0', icon: '◷' }];
+  const interviewCount = companyApplications.filter((application) => application.status === 'INTERVIEW').length;
+  const metrics = [{ label: 'Open vacancies', value: String(openVacancies), icon: '▤' }, { label: 'Applications', value: String(companyApplications.length), icon: '↗' }, { label: 'Interviews', value: String(interviewCount), icon: '◷' }];
+  const filteredApplications = reviewFilter === 'ALL' ? companyApplications : companyApplications.filter((application) => application.vacancyId === reviewFilter);
 
   function startEditing(vacancy) {
     setEditingId(vacancy.id);
@@ -303,6 +314,22 @@ function Dashboard({ session, onLogout, onHome }) {
     }
   }
 
+  async function updateApplicationStatus(application, status) {
+    setStatusSavingId(application.id);
+    setVacancyError('');
+    try {
+      await vacancyApi(`/api/company/applications/${application.id}/status`, session.accessToken, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+      await loadVacancies();
+    } catch (error) {
+      setVacancyError(error.message);
+    } finally {
+      setStatusSavingId('');
+    }
+  }
+
   return (
     <main className="dashboard-shell">
       <header className="dashboard-topbar"><a className="brand" href="#top" onClick={(event) => { event.preventDefault(); onHome(); }}><span className="brand-symbol"><span /></span><span>Career<span className="brand-is">IS</span></span></a><div className="dashboard-account"><span className="dashboard-avatar">{firstName.charAt(0).toUpperCase()}</span><span><b>{session.user.name}</b><small>{isCompany ? 'Company account' : 'Student account'}</small></span><button type="button" onClick={onLogout}>Sign out</button></div></header>
@@ -339,6 +366,14 @@ function Dashboard({ session, onLogout, onHome }) {
               <div className="vacancy-skills">{vacancy.skills.map((skill) => <span className="category-pill" key={skill}>{skill}</span>)}</div>
               <div className="vacancy-card-actions"><button type="button" className="vacancy-edit" onClick={() => startEditing(vacancy)}>Edit listing</button><button type="button" className={vacancy.status === 'OPEN' ? 'vacancy-close' : 'vacancy-reopen'} onClick={() => toggleVacancyStatus(vacancy)}>{vacancy.status === 'OPEN' ? 'Close vacancy' : 'Reopen vacancy'}</button></div>
             </article>)}</div>}
+            <section className="company-review-section">
+              <div className="vacancy-list-heading"><div><h3>Applications</h3><p>Review applicants and update their progress.</p></div><label className="review-filter"><span>Vacancy</span><select value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value)}><option value="ALL">All vacancies</option>{vacancies.map((vacancy) => <option key={vacancy.id} value={vacancy.id}>{vacancy.title}</option>)}</select></label></div>
+              {vacanciesLoading ? <div className="vacancy-list-placeholder">Loading applications…</div> : filteredApplications.length === 0 ? <div className="vacancy-list-placeholder"><div className="empty-art"><span>↗</span><i /><i /><i /></div><h3>No applications yet.</h3><p>When students apply, their details will appear here for review.</p></div> : <div className="company-application-list">{filteredApplications.map((application) => <article className="company-application-card" key={application.id}>
+                <div className="company-application-main"><span className="company-mark lavender">{application.studentName.charAt(0).toUpperCase()}</span><div className="company-application-identity"><h4>{application.studentName}</h4><a href={`mailto:${application.studentEmail}`}>{application.studentEmail}</a><p>{application.vacancyTitle} · Applied {new Date(application.appliedAt).toLocaleDateString()}</p></div><span className={`application-status ${application.status.toLowerCase()}`}>{application.status.replace('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase())}</span></div>
+                <div className="company-application-note"><b>Note to the company</b><p>{application.coverLetter || 'The student did not include a note.'}</p></div>
+                <div className="company-review-actions"><span>Update status</span><div><button type="button" className={application.status === 'UNDER_REVIEW' ? 'selected' : ''} disabled={statusSavingId === application.id || application.status === 'UNDER_REVIEW'} onClick={() => updateApplicationStatus(application, 'UNDER_REVIEW')}>{statusSavingId === application.id ? 'Saving…' : 'Under review'}</button><button type="button" className={application.status === 'INTERVIEW' ? 'selected interview' : 'interview'} disabled={statusSavingId === application.id || application.status === 'INTERVIEW'} onClick={() => updateApplicationStatus(application, 'INTERVIEW')}>{statusSavingId === application.id ? 'Saving…' : 'Invite to interview'}</button><button type="button" className={application.status === 'REJECTED' ? 'selected rejected' : 'rejected'} disabled={statusSavingId === application.id || application.status === 'REJECTED'} onClick={() => updateApplicationStatus(application, 'REJECTED')}>{statusSavingId === application.id ? 'Saving…' : 'Reject'}</button></div></div>
+              </article>)}</div>}
+            </section>
           </section>
         ) : <StudentWorkspace session={session} />}
       </section>

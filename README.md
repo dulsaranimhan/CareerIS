@@ -79,7 +79,11 @@ The student dashboard loads open vacancies and the student's application history
 - `GET /api/student/applications` — list the signed-in student's applications
 - `POST /api/student/applications` — apply with `vacancyId` and optional `coverLetter`
 
-Application status values include `SUBMITTED`, `UNDER_REVIEW`, `INTERVIEW`, `REJECTED`, and `WITHDRAWN`. At this stage, students can view their status; company application review and status changes are a future milestone.
+Application status values include `SUBMITTED`, `UNDER_REVIEW`, `INTERVIEW`, `REJECTED`, and `WITHDRAWN`. Companies can view applicants to their own vacancies, read their contact email and optional note, and update status to Under review, Interview, or Rejected. Students can refresh their application list to see company updates. Company ownership is checked by the API before listing or updating applications.
+
+- `GET /api/company/applications` — list applications for the signed-in company's vacancies
+- `GET /api/company/applications?vacancyId={id}` — filter applicants to one vacancy
+- `PATCH /api/company/applications/{id}/status` — update status to `UNDER_REVIEW`, `INTERVIEW`, or `REJECTED`
 
 ## Run locally
 

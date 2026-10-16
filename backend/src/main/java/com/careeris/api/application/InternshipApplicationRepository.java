@@ -7,5 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface InternshipApplicationRepository extends MongoRepository<InternshipApplication, String> {
     List<InternshipApplication> findByStudentIdOrderByAppliedAtDesc(String studentId);
+    List<InternshipApplication> findByCompanyIdOrderByAppliedAtDesc(String companyId);
+    List<InternshipApplication> findByCompanyIdAndVacancyIdOrderByAppliedAtDesc(String companyId, String vacancyId);
     Optional<InternshipApplication> findByStudentIdAndVacancyId(String studentId, String vacancyId);
 }

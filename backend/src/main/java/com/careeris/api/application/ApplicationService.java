@@ -29,6 +29,26 @@ public class ApplicationService {
         return applications.findByStudentIdOrderByAppliedAtDesc(studentId).stream().map(ApplicationResponse::from).toList();
     }
 
+    public List<ApplicationResponse> listForCompany(String companyId, String vacancyId) {
+        List<InternshipApplication> results = vacancyId == null || vacancyId.isBlank()
+                ? applications.findByCompanyIdOrderByAppliedAtDesc(companyId)
+                : applications.findByCompanyIdAndVacancyIdOrderByAppliedAtDesc(companyId, vacancyId);
+        return results.stream().map(ApplicationResponse::from).toList();
+    }
+
+    public ApplicationResponse updateStatus(String companyId, String applicationId, ApplicationStatus status) {
+        if (status != ApplicationStatus.UNDER_REVIEW && status != ApplicationStatus.INTERVIEW && status != ApplicationStatus.REJECTED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Choose Under review, Interview, or Rejected.");
+        }
+        InternshipApplication application = applications.findById(applicationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found."));
+        if (!application.getCompanyId().equals(companyId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot update another company's application.");
+        }
+        application.setStatus(status);
+        return ApplicationResponse.from(applications.save(application));
+    }
+
     public ApplicationResponse apply(String studentId, ApplicationRequest request) {
         if (applications.findByStudentIdAndVacancyId(studentId, request.vacancyId()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "You have already applied to this vacancy.");
