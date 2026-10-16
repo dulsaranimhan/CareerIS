@@ -134,17 +134,24 @@ function StudentWorkspace({ session }) {
   const [selectedVacancy, setSelectedVacancy] = useState(null);
   const [coverLetter, setCoverLetter] = useState('');
   const [applying, setApplying] = useState(false);
+  const [profile, setProfile] = useState({ education: '', qualification: '', profileSummary: '', skills: [], cvFileName: '' });
+  const [profileDraft, setProfileDraft] = useState({ education: '', qualification: '', profileSummary: '', skills: '' });
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [cvUploading, setCvUploading] = useState(false);
 
   async function loadStudentData() {
     setLoading(true);
     setError('');
     try {
-      const [openVacancies, myApplications] = await Promise.all([
+      const [openVacancies, myApplications, studentProfile] = await Promise.all([
         vacancyApi('/api/vacancies', session.accessToken),
         vacancyApi('/api/student/applications', session.accessToken),
+        vacancyApi('/api/student/profile', session.accessToken),
       ]);
       setVacancies(openVacancies);
       setApplications(myApplications);
+      setProfile(studentProfile);
+      setProfileDraft({ education: studentProfile.education || '', qualification: studentProfile.qualification || '', profileSummary: studentProfile.profileSummary || '', skills: (studentProfile.skills || []).join(', ') });
     } catch (loadError) {
       setError(loadError.message);
     } finally {
@@ -162,6 +169,7 @@ function StudentWorkspace({ session }) {
     return matchesSearch && (workMode === 'ALL' || vacancy.workMode === workMode);
   });
   const interviewCount = applications.filter((application) => application.status === 'INTERVIEW').length;
+  const profileComplete = Boolean(profile.education && profile.qualification && profile.skills?.length && profile.cvFileName);
 
   async function submitApplication(event) {
     event.preventDefault();
@@ -186,11 +194,31 @@ function StudentWorkspace({ session }) {
     }
   }
 
+  async function saveProfile(event) {
+    event.preventDefault(); setProfileSaving(true); setError(''); setNotice('');
+    try {
+      const saved = await vacancyApi('/api/student/profile', session.accessToken, { method: 'PUT', body: JSON.stringify({ ...profileDraft, skills: profileDraft.skills.split(',').map((skill) => skill.trim()).filter(Boolean) }) });
+      setProfile(saved); setNotice('Your profile has been saved.');
+    } catch (saveError) { setError(saveError.message); } finally { setProfileSaving(false); }
+  }
+
+  async function uploadCv(event) {
+    const file = event.target.files?.[0]; if (!file) return;
+    setCvUploading(true); setError(''); setNotice('');
+    try {
+      const data = new FormData(); data.append('file', file);
+      const response = await fetch('/api/student/profile/cv', { method: 'POST', headers: { Authorization: `Bearer ${session.accessToken}` }, body: data });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.message || 'Could not upload your CV.');
+      setProfile(result); setNotice('Your CV has been uploaded.');
+    } catch (uploadError) { setError(uploadError.message); } finally { setCvUploading(false); event.target.value = ''; }
+  }
+
   return <>
     <div className="dashboard-metrics student-metrics">
       <article className="dashboard-metric"><span className="dashboard-metric-icon">↗</span><span>Applications</span><b>{applications.length}</b></article>
       <article className="dashboard-metric"><span className="dashboard-metric-icon">◷</span><span>Interviews</span><b>{interviewCount}</b></article>
-      <article className="dashboard-metric"><span className="dashboard-metric-icon">✳</span><span>Profile status</span><b>New</b></article>
+      <article className="dashboard-metric"><span className="dashboard-metric-icon">✳</span><span>Profile status</span><b>{profileComplete ? 'Ready' : 'In progress'}</b></article>
     </div>
     <section className="student-workspace">
       <div className="student-workspace-heading"><div><p className="eyebrow">YOUR NEXT OPPORTUNITY</p><h2>Find an internship</h2><p>Explore open roles and keep track of the ones you apply to.</p></div></div>
@@ -199,7 +227,19 @@ function StudentWorkspace({ session }) {
       <div className="student-tabs" role="tablist" aria-label="Student dashboard sections">
         <button type="button" role="tab" aria-selected={view === 'vacancies'} className={view === 'vacancies' ? 'active' : ''} onClick={() => { setView('vacancies'); setNotice(''); }}>Browse vacancies <span>{vacancies.length}</span></button>
         <button type="button" role="tab" aria-selected={view === 'applications'} className={view === 'applications' ? 'active' : ''} onClick={() => { setView('applications'); setNotice(''); }}>My applications <span>{applications.length}</span></button>
+        <button type="button" role="tab" aria-selected={view === 'profile'} className={view === 'profile' ? 'active' : ''} onClick={() => { setView('profile'); setNotice(''); }}>My profile</button>
       </div>
+      {view === 'profile' && <form className="student-profile-form" onSubmit={saveProfile}>
+        <div className="profile-intro"><div><h3>Your student profile</h3><p>Share your education, qualifications, and skills with companies you apply to.</p></div><span className="profile-completion">CV {profile.cvFileName ? 'uploaded' : 'not added'}</span></div>
+        <div className="profile-fields">
+          <label>Education<input maxLength="160" value={profileDraft.education} onChange={(event) => setProfileDraft({ ...profileDraft, education: event.target.value })} placeholder="e.g. BSc in Information Technology" /></label>
+          <label>Qualification<input maxLength="240" value={profileDraft.qualification} onChange={(event) => setProfileDraft({ ...profileDraft, qualification: event.target.value })} placeholder="e.g. Undergraduate, expected 2027" /></label>
+          <label className="profile-wide">Skills <span>(separate with commas)</span><input value={profileDraft.skills} onChange={(event) => setProfileDraft({ ...profileDraft, skills: event.target.value })} placeholder="e.g. Java, React, teamwork" /></label>
+          <label className="profile-wide">About you<textarea maxLength="1500" rows="4" value={profileDraft.profileSummary} onChange={(event) => setProfileDraft({ ...profileDraft, profileSummary: event.target.value })} placeholder="A short introduction about your interests and career goals." /></label>
+        </div>
+        <div className="cv-upload-row"><div><b>Curriculum vitae</b><span>{profile.cvFileName || 'PDF, DOC, or DOCX · up to 5 MB'}</span></div><label className="button button-light cv-upload-button">{cvUploading ? 'Uploading…' : profile.cvFileName ? 'Replace CV' : 'Upload CV'}<input type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={uploadCv} disabled={cvUploading} /></label></div>
+        <div className="profile-form-footer"><span>Companies can view your profile when you apply.</span><button className="button button-purple" type="submit" disabled={profileSaving}>{profileSaving ? 'Saving…' : 'Save profile'} <ArrowUpRight /></button></div>
+      </form>}
       {view === 'applications' && <div className="student-applications-toolbar"><span>Your application progress</span><button type="button" onClick={loadStudentData} disabled={loading}>{loading ? 'Refreshing…' : 'Refresh status ↻'}</button></div>}
       {view === 'vacancies' ? <>
         <div className="vacancy-search-row"><label className="vacancy-search"><span>⌕</span><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search job title, company, skill, or location" aria-label="Search vacancies" /></label><label className="work-mode-filter"><span>Work arrangement</span><select value={workMode} onChange={(event) => setWorkMode(event.target.value)}><option value="ALL">All types</option><option value="ON_SITE">On-site</option><option value="HYBRID">Hybrid</option><option value="REMOTE">Remote</option></select></label></div>
@@ -211,7 +251,7 @@ function StudentWorkspace({ session }) {
           <div className="vacancy-skills">{vacancy.skills.slice(0, 4).map((skill) => <span className="category-pill" key={skill}>{skill}</span>)}{vacancy.skills.length > 4 && <span className="category-pill">+{vacancy.skills.length - 4}</span>}</div>
           <div className="student-vacancy-footer"><span>Apply by {new Date(`${vacancy.deadline}T00:00:00`).toLocaleDateString()}</span><button type="button" onClick={() => { setSelectedVacancy(vacancy); setCoverLetter(''); }}>View details <ArrowUpRight /></button></div>
         </article>)}</div>}
-      </> : applications.length === 0 ? <div className="student-empty-state"><div className="empty-art"><span>↗</span><i /><i /><i /></div><h3>Your applications will show up here.</h3><p>Find an internship you like and submit your first application.</p><button className="button button-purple" type="button" onClick={() => setView('vacancies')}>Browse vacancies <ArrowUpRight /></button></div> : <div className="student-applications-list">{applications.map((application) => <article className="student-application-card" key={application.id}><span className="company-mark lavender">{application.companyName.charAt(0).toUpperCase()}</span><div className="student-application-info"><h3>{application.vacancyTitle}</h3><p>{application.companyName} · Applied {new Date(application.appliedAt).toLocaleDateString()}</p></div><span className={`application-status ${application.status.toLowerCase()}`}>{application.status.replace('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase())}</span></article>)}</div>}
+      </> : view === 'applications' ? applications.length === 0 ? <div className="student-empty-state"><div className="empty-art"><span>↗</span><i /><i /><i /></div><h3>Your applications will show up here.</h3><p>Find an internship you like and submit your first application.</p><button className="button button-purple" type="button" onClick={() => setView('vacancies')}>Browse vacancies <ArrowUpRight /></button></div> : <div className="student-applications-list">{applications.map((application) => <article className="student-application-card" key={application.id}><span className="company-mark lavender">{application.companyName.charAt(0).toUpperCase()}</span><div className="student-application-info"><h3>{application.vacancyTitle}</h3><p>{application.companyName} · Applied {new Date(application.appliedAt).toLocaleDateString()}</p></div><span className={`application-status ${application.status.toLowerCase()}`}>{application.status.replace('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase())}</span></article>)}</div> : null}
     </section>
     {selectedVacancy && <div className="vacancy-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedVacancy(null); }}><section className="vacancy-modal" role="dialog" aria-modal="true" aria-labelledby="vacancy-modal-title"><button type="button" className="vacancy-modal-close" aria-label="Close vacancy details" onClick={() => setSelectedVacancy(null)}>×</button><span className="vacancy-status open"><i />Open</span><p className="company-name">{selectedVacancy.companyName}</p><h2 id="vacancy-modal-title">{selectedVacancy.title}</h2><div className="vacancy-details"><span>⌖ {selectedVacancy.location}</span><span>◷ {selectedVacancy.workMode.replace('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase())}</span><span>Apply by {new Date(`${selectedVacancy.deadline}T00:00:00`).toLocaleDateString()}</span></div><h3>About this internship</h3><p className="vacancy-modal-description">{selectedVacancy.description}</p><h3>Skills and qualifications</h3><div className="vacancy-skills">{selectedVacancy.skills.map((skill) => <span className="category-pill" key={skill}>{skill}</span>)}</div>{appliedVacancyIds.has(selectedVacancy.id) ? <p className="form-message info">You have already applied for this vacancy. Check My applications for updates.</p> : <form className="student-apply-form" onSubmit={submitApplication}><label>Short note to the company <span>(optional)</span><textarea value={coverLetter} onChange={(event) => setCoverLetter(event.target.value)} rows="4" maxLength="3000" placeholder="Tell the company why this internship interests you." /></label><button className="button button-purple" type="submit" disabled={applying}>{applying ? 'Submitting…' : 'Submit application'} <ArrowUpRight /></button></form>}</section></div>}
   </>;
@@ -230,6 +270,8 @@ function Dashboard({ session, onLogout, onHome }) {
   const [savingVacancy, setSavingVacancy] = useState(false);
   const [statusSavingId, setStatusSavingId] = useState('');
   const [reviewFilter, setReviewFilter] = useState('ALL');
+  const [applicantProfiles, setApplicantProfiles] = useState({});
+  const [profileLoadingId, setProfileLoadingId] = useState('');
 
   async function loadVacancies() {
     setVacanciesLoading(true);
@@ -330,6 +372,28 @@ function Dashboard({ session, onLogout, onHome }) {
     }
   }
 
+  async function toggleApplicantProfile(application) {
+    if (applicantProfiles[application.id]) {
+      setApplicantProfiles((current) => ({ ...current, [application.id]: null }));
+      return;
+    }
+    setProfileLoadingId(application.id);
+    try {
+      const profile = await vacancyApi(`/api/company/applications/${application.id}/student-profile`, session.accessToken);
+      setApplicantProfiles((current) => ({ ...current, [application.id]: profile }));
+    } catch (error) { setVacancyError(error.message); } finally { setProfileLoadingId(''); }
+  }
+
+  async function downloadApplicantCv(application) {
+    setProfileLoadingId(application.id);
+    try {
+      const response = await fetch(`/api/company/applications/${application.id}/cv`, { headers: { Authorization: `Bearer ${session.accessToken}` } });
+      if (!response.ok) throw new Error('Could not download this CV. The student may not have uploaded one yet.');
+      const blob = await response.blob(); const url = URL.createObjectURL(blob);
+      const link = document.createElement('a'); link.href = url; link.download = applicantProfiles[application.id]?.cvFileName || 'student-cv'; link.click(); URL.revokeObjectURL(url);
+    } catch (error) { setVacancyError(error.message); } finally { setProfileLoadingId(''); }
+  }
+
   return (
     <main className="dashboard-shell">
       <header className="dashboard-topbar"><a className="brand" href="#top" onClick={(event) => { event.preventDefault(); onHome(); }}><span className="brand-symbol"><span /></span><span>Career<span className="brand-is">IS</span></span></a><div className="dashboard-account"><span className="dashboard-avatar">{firstName.charAt(0).toUpperCase()}</span><span><b>{session.user.name}</b><small>{isCompany ? 'Company account' : 'Student account'}</small></span><button type="button" onClick={onLogout}>Sign out</button></div></header>
@@ -371,6 +435,8 @@ function Dashboard({ session, onLogout, onHome }) {
               {vacanciesLoading ? <div className="vacancy-list-placeholder">Loading applications…</div> : filteredApplications.length === 0 ? <div className="vacancy-list-placeholder"><div className="empty-art"><span>↗</span><i /><i /><i /></div><h3>No applications yet.</h3><p>When students apply, their details will appear here for review.</p></div> : <div className="company-application-list">{filteredApplications.map((application) => <article className="company-application-card" key={application.id}>
                 <div className="company-application-main"><span className="company-mark lavender">{application.studentName.charAt(0).toUpperCase()}</span><div className="company-application-identity"><h4>{application.studentName}</h4><a href={`mailto:${application.studentEmail}`}>{application.studentEmail}</a><p>{application.vacancyTitle} · Applied {new Date(application.appliedAt).toLocaleDateString()}</p></div><span className={`application-status ${application.status.toLowerCase()}`}>{application.status.replace('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase())}</span></div>
                 <div className="company-application-note"><b>Note to the company</b><p>{application.coverLetter || 'The student did not include a note.'}</p></div>
+                <div className="applicant-profile-actions"><button type="button" onClick={() => toggleApplicantProfile(application)} disabled={profileLoadingId === application.id}>{profileLoadingId === application.id ? 'Loading…' : applicantProfiles[application.id] ? 'Hide student profile' : 'View student profile'}</button>{applicantProfiles[application.id]?.cvFileName && <button type="button" onClick={() => downloadApplicantCv(application)} disabled={profileLoadingId === application.id}>{profileLoadingId === application.id ? 'Preparing…' : `Download ${applicantProfiles[application.id].cvFileName}`}</button>}</div>
+                {applicantProfiles[application.id] && <div className="applicant-profile"><div><span>EDUCATION</span><p>{applicantProfiles[application.id].education || 'Not provided'}</p></div><div><span>QUALIFICATION</span><p>{applicantProfiles[application.id].qualification || 'Not provided'}</p></div><div className="applicant-profile-wide"><span>ABOUT</span><p>{applicantProfiles[application.id].profileSummary || 'No introduction added yet.'}</p></div><div className="applicant-profile-wide"><span>SKILLS</span><div className="vacancy-skills">{(applicantProfiles[application.id].skills || []).length ? applicantProfiles[application.id].skills.map((skill) => <span key={skill} className="category-pill">{skill}</span>) : <p>Not provided</p>}</div></div>{!applicantProfiles[application.id].cvFileName && <p className="applicant-no-cv">The student has not uploaded a CV yet.</p>}</div>}
                 <div className="company-review-actions"><span>Update status</span><div><button type="button" className={application.status === 'UNDER_REVIEW' ? 'selected' : ''} disabled={statusSavingId === application.id || application.status === 'UNDER_REVIEW'} onClick={() => updateApplicationStatus(application, 'UNDER_REVIEW')}>{statusSavingId === application.id ? 'Saving…' : 'Under review'}</button><button type="button" className={application.status === 'INTERVIEW' ? 'selected interview' : 'interview'} disabled={statusSavingId === application.id || application.status === 'INTERVIEW'} onClick={() => updateApplicationStatus(application, 'INTERVIEW')}>{statusSavingId === application.id ? 'Saving…' : 'Invite to interview'}</button><button type="button" className={application.status === 'REJECTED' ? 'selected rejected' : 'rejected'} disabled={statusSavingId === application.id || application.status === 'REJECTED'} onClick={() => updateApplicationStatus(application, 'REJECTED')}>{statusSavingId === application.id ? 'Saving…' : 'Reject'}</button></div></div>
               </article>)}</div>}
             </section>
