@@ -291,6 +291,7 @@ function Dashboard({ session, onLogout, onHome }) {
   const [profileLoadingId, setProfileLoadingId] = useState('');
   const [interviewDrafts, setInterviewDrafts] = useState({});
   const [interviewSavingId, setInterviewSavingId] = useState('');
+  const [interviewErrors, setInterviewErrors] = useState({});
   const [interviewMessage, setInterviewMessage] = useState('');
 
   async function loadVacancies() {
@@ -424,20 +425,29 @@ function Dashboard({ session, onLogout, onHome }) {
   }
 
   function changeInterviewDraft(application, field, value) {
-    setInterviewDrafts((current) => ({ ...current, [application.id]: { ...interviewDraft(application), [field]: value } }));
+    setInterviewDrafts((current) => {
+      const existing = current[application.id] || {
+        date: application.interviewDate || '',
+        time: application.interviewTime?.slice(0, 5) || '',
+        location: application.interviewLocation || '',
+        notes: application.interviewNotes || '',
+      };
+      return { ...current, [application.id]: { ...existing, [field]: value } };
+    });
   }
 
   async function saveInterviewSchedule(event, application) {
     event.preventDefault();
     const draft = interviewDraft(application);
-    setInterviewSavingId(application.id); setInterviewMessage(''); setVacancyError('');
+    setInterviewSavingId(application.id); setInterviewMessage('');
+    setInterviewErrors((current) => ({ ...current, [application.id]: '' }));
     try {
       const updated = await vacancyApi(`/api/company/applications/${application.id}/interview`, session.accessToken, {
         method: 'PATCH', body: JSON.stringify(draft),
       });
       setCompanyApplications((current) => current.map((item) => item.id === updated.id ? updated : item));
       setInterviewMessage(`Interview details saved for ${application.studentName}.`);
-    } catch (error) { setVacancyError(error.message); }
+    } catch (error) { setInterviewErrors((current) => ({ ...current, [application.id]: error.message })); }
     finally { setInterviewSavingId(''); }
   }
 
@@ -485,7 +495,7 @@ function Dashboard({ session, onLogout, onHome }) {
                 <div className="company-application-note"><b>Note to the company</b><p>{application.coverLetter || 'The student did not include a note.'}</p></div>
                 <div className="applicant-profile-actions"><button type="button" onClick={() => toggleApplicantProfile(application)} disabled={profileLoadingId === application.id}>{profileLoadingId === application.id ? 'Loading…' : applicantProfiles[application.id] ? 'Hide student profile' : 'View student profile'}</button>{applicantProfiles[application.id]?.cvFileName && <button type="button" onClick={() => downloadApplicantCv(application)} disabled={profileLoadingId === application.id}>{profileLoadingId === application.id ? 'Preparing…' : `Download ${applicantProfiles[application.id].cvFileName}`}</button>}</div>
                 {applicantProfiles[application.id] && <div className="applicant-profile"><div><span>EDUCATION</span><p>{applicantProfiles[application.id].education || 'Not provided'}</p></div><div><span>QUALIFICATION</span><p>{applicantProfiles[application.id].qualification || 'Not provided'}</p></div><div className="applicant-profile-wide"><span>ABOUT</span><p>{applicantProfiles[application.id].profileSummary || 'No introduction added yet.'}</p></div><div className="applicant-profile-wide"><span>SKILLS</span><div className="vacancy-skills">{(applicantProfiles[application.id].skills || []).length ? applicantProfiles[application.id].skills.map((skill) => <span key={skill} className="category-pill">{skill}</span>) : <p>Not provided</p>}</div></div>{!applicantProfiles[application.id].cvFileName && <p className="applicant-no-cv">The student has not uploaded a CV yet.</p>}</div>}
-                {application.status === 'INTERVIEW' && <form className="interview-schedule-form" onSubmit={(event) => saveInterviewSchedule(event, application)}><div className="interview-schedule-heading"><div><b>Interview schedule</b><span>{application.interviewDate ? 'Update the date or meeting details' : 'Choose a time and let the student know where to meet'}</span></div>{application.interviewDate && <span className="schedule-saved">Scheduled</span>}</div><div className="interview-schedule-fields"><label>Date<input type="date" min={new Date().toISOString().slice(0, 10)} value={interviewDraft(application).date} onChange={(event) => changeInterviewDraft(application, 'date', event.target.value)} required /></label><label>Time<input type="time" value={interviewDraft(application).time} onChange={(event) => changeInterviewDraft(application, 'time', event.target.value)} required /></label><label className="interview-wide">Location or meeting link<input maxLength="240" value={interviewDraft(application).location} onChange={(event) => changeInterviewDraft(application, 'location', event.target.value)} placeholder="Office address or video call link" required /></label><label className="interview-wide">Additional details <span>(optional)</span><textarea rows="2" maxLength="1000" value={interviewDraft(application).notes} onChange={(event) => changeInterviewDraft(application, 'notes', event.target.value)} placeholder="Anything the student should prepare or know." /></label></div><button className="button button-purple" type="submit" disabled={interviewSavingId === application.id}>{interviewSavingId === application.id ? 'Saving…' : application.interviewDate ? 'Save interview details' : 'Schedule interview'} <ArrowUpRight /></button></form>}
+                {application.status === 'INTERVIEW' && <form className="interview-schedule-form" onSubmit={(event) => saveInterviewSchedule(event, application)}><div className="interview-schedule-heading"><div><b>Interview schedule</b><span>{application.interviewDate ? 'Update the date or meeting details' : 'Choose a time and let the student know where to meet'}</span></div>{application.interviewDate && <span className="schedule-saved">Scheduled</span>}</div><div className="interview-schedule-fields"><label>Date<input type="date" min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10)} value={interviewDraft(application).date} onChange={(event) => changeInterviewDraft(application, 'date', event.target.value)} required /></label><label>Time<input type="time" value={interviewDraft(application).time} onChange={(event) => changeInterviewDraft(application, 'time', event.target.value)} required /></label><label className="interview-wide">Location or meeting link<input maxLength="240" value={interviewDraft(application).location} onChange={(event) => changeInterviewDraft(application, 'location', event.target.value)} placeholder="Office address or video call link" required /></label><label className="interview-wide">Additional details <span>(optional)</span><textarea rows="2" maxLength="1000" value={interviewDraft(application).notes} onChange={(event) => changeInterviewDraft(application, 'notes', event.target.value)} placeholder="Anything the student should prepare or know." /></label></div>{interviewErrors[application.id] && <p className="form-message error" role="alert">{interviewErrors[application.id]}</p>}<button className="button button-purple" type="submit" disabled={interviewSavingId === application.id}>{interviewSavingId === application.id ? 'Saving…' : application.interviewDate ? 'Save interview details' : 'Schedule interview'} <ArrowUpRight /></button></form>}
                 <div className="company-review-actions"><span>Update status</span><div><button type="button" className={application.status === 'UNDER_REVIEW' ? 'selected' : ''} disabled={statusSavingId === application.id || application.status === 'UNDER_REVIEW'} onClick={() => updateApplicationStatus(application, 'UNDER_REVIEW')}>{statusSavingId === application.id ? 'Saving…' : 'Under review'}</button><button type="button" className={application.status === 'INTERVIEW' ? 'selected interview' : 'interview'} disabled={statusSavingId === application.id || application.status === 'INTERVIEW'} onClick={() => updateApplicationStatus(application, 'INTERVIEW')}>{statusSavingId === application.id ? 'Saving…' : 'Invite to interview'}</button><button type="button" className={application.status === 'REJECTED' ? 'selected rejected' : 'rejected'} disabled={statusSavingId === application.id || application.status === 'REJECTED'} onClick={() => updateApplicationStatus(application, 'REJECTED')}>{statusSavingId === application.id ? 'Saving…' : 'Reject'}</button></div></div>
               </article>)}</div>}
             </section>
