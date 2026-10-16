@@ -1,6 +1,8 @@
 package com.careeris.api.application;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -29,6 +31,10 @@ public class InternshipApplication {
     private ApplicationStatus status;
     private Instant appliedAt;
     private Instant updatedAt;
+    private LocalDate interviewDate;
+    private LocalTime interviewTime;
+    private String interviewLocation;
+    private String interviewNotes;
 
     protected InternshipApplication() {
     }
@@ -60,8 +66,19 @@ public class InternshipApplication {
     public ApplicationStatus getStatus() { return status; }
     public Instant getAppliedAt() { return appliedAt; }
     public Instant getUpdatedAt() { return updatedAt; }
+    public LocalDate getInterviewDate() { return interviewDate; }
+    public LocalTime getInterviewTime() { return interviewTime; }
+    public String getInterviewLocation() { return interviewLocation; }
+    public String getInterviewNotes() { return interviewNotes; }
     public void setStatus(ApplicationStatus status) {
         this.status = status;
+        this.updatedAt = Instant.now();
+    }
+    public void setInterview(LocalDate date, LocalTime time, String location, String notes) {
+        this.interviewDate = date;
+        this.interviewTime = time;
+        this.interviewLocation = location.trim();
+        this.interviewNotes = notes == null || notes.isBlank() ? null : notes.trim();
         this.updatedAt = Instant.now();
     }
 }

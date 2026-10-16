@@ -31,4 +31,10 @@ public class CompanyApplicationController {
             Authentication authentication) {
         return applicationService.updateStatus(authentication.getName(), id, request.status());
     }
+
+    @PatchMapping("/{id}/interview")
+    public ApplicationResponse scheduleInterview(@PathVariable String id,
+            @Valid @RequestBody InterviewScheduleRequest request, Authentication authentication) {
+        return applicationService.scheduleInterview(authentication.getName(), id, request);
+    }
 }

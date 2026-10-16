@@ -1,6 +1,8 @@
 package com.careeris.api.application;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import com.careeris.api.auth.UserAccount;
@@ -46,6 +48,23 @@ public class ApplicationService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot update another company's application.");
         }
         application.setStatus(status);
+        return ApplicationResponse.from(applications.save(application));
+    }
+
+    public ApplicationResponse scheduleInterview(String companyId, String applicationId, InterviewScheduleRequest request) {
+        InternshipApplication application = applications.findById(applicationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found."));
+        if (!application.getCompanyId().equals(companyId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot update another company's application.");
+        }
+        if (application.getStatus() != ApplicationStatus.INTERVIEW) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Invite the student to interview before scheduling a time.");
+        }
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Colombo"));
+        if (request.date().isBefore(today) || (request.date().equals(today) && request.time().isBefore(LocalTime.now(ZoneId.of("Asia/Colombo"))))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Choose an interview time in the future.");
+        }
+        application.setInterview(request.date(), request.time(), request.location(), request.notes());
         return ApplicationResponse.from(applications.save(application));
     }
 
