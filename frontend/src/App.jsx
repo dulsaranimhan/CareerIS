@@ -209,7 +209,15 @@ function StudentWorkspace({ session }) {
       const data = new FormData(); data.append('file', file);
       const response = await fetch('/api/student/profile/cv', { method: 'POST', headers: { Authorization: `Bearer ${session.accessToken}` }, body: data });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.message || 'Could not upload your CV.');
+      if (!response.ok) {
+        const statusMessage = response.status === 401 ? 'Your sign-in expired. Sign in again, then retry the upload.'
+          : response.status === 403 ? 'This upload is available to student accounts only.'
+          : response.status === 404 ? 'The backend does not have the CV upload route yet. Restart it from the latest CareerIS project files.'
+          : response.status === 413 ? 'CV files must be 5 MB or smaller.'
+          : response.status === 503 ? 'MongoDB could not save the CV. Check that MongoDB is running, then try again.'
+          : `Upload failed (HTTP ${response.status}${result.error ? ` ${result.error}` : ''}).`;
+        throw new Error(result.message || statusMessage);
+      }
       setProfile(result); setNotice('Your CV has been uploaded.');
     } catch (uploadError) { setError(uploadError.message); } finally { setCvUploading(false); event.target.value = ''; }
   }
