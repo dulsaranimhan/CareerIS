@@ -1,106 +1,160 @@
-# CareerIS — Student Skills and Internship Matching System
+# CareerIS
 
-CareerIS connects students looking for internships with companies that publish vacancies. Students create profiles, add qualifications, upload a CV, browse vacancies, and apply. Companies manage vacancies and review applications, including shortlisting candidates for interviews.
+**CareerIS — Student Skills and Internship Matching System** connects students seeking internships with companies recruiting interns. Students build a profile, upload a CV, browse opportunities, and apply. Companies publish vacancies, review applications, and schedule interviews.
 
-## Project scope
+> CareerIS is a rule-based internship platform. It does not use AI matching.
 
-- Student and company registration and sign-in
-- Student profile, qualifications, skills, and CV
-- Company profile and vacancy management
-- Vacancy browsing and applications
-- Company applicant review and application status updates
+## Features
 
-No AI matching is included in this project scope.
+### Students
+
+- Register and sign in with a student account
+- Add education, qualifications, skills, and a short profile summary
+- Upload or replace a CV in PDF, DOC, or DOCX format (maximum 5 MB)
+- Browse, search, and filter open internship vacancies
+- Apply to a vacancy with an optional note
+- Track application status and view interview date, time, location or meeting link, and notes
+
+### Companies
+
+- Register and sign in with a company account
+- Create, edit, close, and reopen internship vacancies
+- Review applications and view the applicant's profile and CV
+- Mark applications Under review, Interview, or Rejected
+- Schedule or update interview details for invited students
 
 ## Technology
 
-- Frontend: React, JavaScript, Vite, CSS
-- Backend: Java, Spring Boot, Maven
-- Database: MongoDB with Spring Data MongoDB
-- API: REST using JSON
-- Version control: Git and GitHub
+| Area | Technology |
+| --- | --- |
+| Frontend | React 19, JavaScript, Vite, CSS |
+| Backend | Java 17, Spring Boot 3.4, Maven |
+| Database and CV storage | MongoDB, Spring Data MongoDB, GridFS |
+| API and security | REST/JSON, Spring Security, JWT bearer tokens |
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Student[Student browser] --> UI[React and Vite]
+    Company[Company browser] --> UI
+    UI -->|REST API with JWT| API[Spring Boot API]
+    API -->|Accounts, profiles, vacancies, applications| DB[(MongoDB)]
+    API -->|CV files| FS[(MongoDB GridFS)]
+```
+
+The API applies student and company role checks. Company vacancy and application operations are restricted to records owned by the signed-in company. CV access is authenticated and limited to the student who uploaded it or a company reviewing that student's application.
 
 ## Repository layout
 
 ```text
-frontend/   React application
-backend/    Spring Boot application
+frontend/   React and Vite application
+backend/    Spring Boot REST API
 ```
-
-## Account registration API
-
-The backend provides `POST /api/auth/register` for student and company accounts. Send JSON with `role` (`STUDENT` or `COMPANY`), `name`, `email`, and `password`. Company registrations also require `contactName`. Passwords are hashed before saving, and email addresses are normalized and unique in the `users` collection.
-
-Example student request:
-
-```json
-{
-  "role": "STUDENT",
-  "name": "Maya Perera",
-  "email": "maya@example.com",
-  "password": "a-secure-password"
-}
-```
-
-Example company request:
-
-```json
-{
-  "role": "COMPANY",
-  "name": "Northstar Studio",
-  "contactName": "Alex Fernando",
-  "email": "alex@northstar.example",
-  "password": "a-secure-password"
-}
-```
-
-The API returns `201 Created` with the account ID, name, email, role, and creation time. Duplicate emails return `409 Conflict`.
-
-`POST /api/auth/login` accepts a role, email, and password. On success it returns an eight-hour bearer token and the account details. The frontend keeps the token for the current browser session and opens the student or company dashboard based on the account role. Protected API routes require that token in an `Authorization: Bearer <token>` header.
-
-## Company vacancies
-
-Companies can create and manage their own vacancies in the company dashboard. A vacancy includes a title, description, comma-separated skills, location, work arrangement (`ON_SITE`, `HYBRID`, or `REMOTE`), and an application deadline. Vacancies are saved in MongoDB, appear in the company's list, and can be edited, closed, or reopened. Only open vacancies are returned by the student feed.
-
-- `GET /api/company/vacancies` — list the signed-in company's vacancies
-- `POST /api/company/vacancies` — create a vacancy
-- `PUT /api/company/vacancies/{id}` — edit a vacancy owned by that company
-- `PATCH /api/company/vacancies/{id}/status` — change status to `OPEN` or `CLOSED`
-- `GET /api/vacancies` — list open vacancies for authenticated students and companies
-
-The API derives the company ID from the signed-in token. A company cannot edit or close another company's vacancy.
-
-## Student browsing and applications
-
-The student dashboard loads open vacancies and the student's application history. Students can search by title, company, skill, and location, filter by work arrangement, inspect details, and apply with an optional note. Applications are saved with a `SUBMITTED` status and a snapshot of the student and vacancy details. Duplicate applications are prevented, including by a MongoDB unique index. Applications after a deadline or to a closed vacancy are rejected.
-
-- `GET /api/vacancies` — list open vacancies with future deadlines
-- `GET /api/vacancies/{id}` — get an open vacancy
-- `GET /api/student/applications` — list the signed-in student's applications
-- `POST /api/student/applications` — apply with `vacancyId` and optional `coverLetter`
-
-Application status values include `SUBMITTED`, `UNDER_REVIEW`, `INTERVIEW`, `REJECTED`, and `WITHDRAWN`. Companies can view applicants to their own vacancies, read their contact email and optional note, and update status to Under review, Interview, or Rejected. Students can refresh their application list to see company updates. Company ownership is checked by the API before listing or updating applications.
-
-- `GET /api/company/applications` — list applications for the signed-in company's vacancies
-- `GET /api/company/applications?vacancyId={id}` — filter applicants to one vacancy
-- `PATCH /api/company/applications/{id}/status` — update status to `UNDER_REVIEW`, `INTERVIEW`, or `REJECTED`
 
 ## Run locally
 
-Prerequisites: Node.js, Java 17 or newer, Maven, and MongoDB.
+### Prerequisites
 
-Start MongoDB locally, then run the backend with `mvn spring-boot:run` from `backend/`. For repeatable local sessions, set `JWT_SECRET` to a Base64-encoded key of at least 32 bytes before starting the backend (for example, generate one with `openssl rand -base64 32`). Without it, the backend creates a temporary key at startup and issued tokens stop working after a restart. Run the frontend with `npm install` followed by `npm run dev` from `frontend/`.
+- Node.js and npm
+- Java 17 or newer
+- Maven
+- MongoDB running locally, or a MongoDB connection string
 
-## Development plan
+### 1. Start MongoDB
 
-1. Project setup and API connection
-2. Student and company accounts
-3. Student profile and CV
-4. Company profile and vacancy management
-5. Vacancy browsing and applications
-6. Company applicant review and statuses
-7. Bug fixes, documentation, and demo
+Start your local MongoDB service and make sure it accepts connections at `mongodb://localhost:27017`. Or use a different MongoDB connection string by setting `MONGODB_URI` before starting the backend.
 
-## Security note
+### 2. Start the backend
 
-Never commit passwords, database credentials, real CVs, or other private data. Use environment variables for local configuration.
+In Terminal 1, from the repository root:
+
+```bash
+cd backend
+export MONGODB_URI="mongodb://localhost:27017/careeris"
+export JWT_SECRET="$(openssl rand -base64 32)"
+mvn spring-boot:run
+```
+
+The API runs at `http://localhost:8080`. Keep this terminal open. The JWT secret should stay the same while you use the app; changing it invalidates existing sign-in sessions.
+
+### 3. Start the frontend
+
+In Terminal 2, from the repository root:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open the local URL printed by Vite, usually `http://localhost:5173`. Vite forwards `/api` requests to the backend at port `8080`.
+
+## Demo workflow
+
+1. Create a student account and a company account using different email addresses.
+2. Sign in as the company and publish an internship with a future deadline.
+3. Sign in as the student, complete the profile, upload a CV, and apply.
+4. Sign in as the company, review the application and profile, then choose **Invite to interview**.
+5. Enter a future date, time, and meeting location or link, then save the interview details.
+6. Sign in as the student and refresh **My applications** to see the interview schedule.
+
+## API overview
+
+Protected routes require `Authorization: Bearer <token>`. `/api/student/**` routes require a student account, `/api/company/**` routes require a company account, and `/api/vacancies/**` routes are available to signed-in students and companies. Registration, login, and the health check are public.
+
+### Authentication
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/auth/register` | Register a student or company |
+| `POST` | `/api/auth/login` | Sign in and receive a JWT |
+| `GET` | `/api/health` | Check API health |
+
+### Student routes
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/vacancies` | Browse open vacancies |
+| `GET` | `/api/vacancies/{id}` | View an open vacancy |
+| `GET` / `PUT` | `/api/student/profile` | Read or update the signed-in student's profile |
+| `POST` | `/api/student/profile/cv` | Upload or replace a CV (`multipart/form-data`, field `file`) |
+| `GET` | `/api/student/profile/cv` | Download the student's own CV |
+| `GET` | `/api/student/applications` | View the student's applications and statuses |
+| `POST` | `/api/student/applications` | Apply with `vacancyId` and optional `coverLetter` |
+
+### Company routes
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` / `POST` | `/api/company/vacancies` | List or publish company vacancies |
+| `PUT` | `/api/company/vacancies/{id}` | Edit an owned vacancy |
+| `PATCH` | `/api/company/vacancies/{id}/status` | Open or close a vacancy |
+| `GET` | `/api/company/applications` | Review applications |
+| `PATCH` | `/api/company/applications/{id}/status` | Update application status |
+| `PATCH` | `/api/company/applications/{id}/interview` | Save interview date, time, location, and notes |
+| `GET` | `/api/company/applications/{id}/student-profile` | View an applicant's profile |
+| `GET` | `/api/company/applications/{id}/cv` | Download an applicant's CV |
+
+## Build commands
+
+Build the frontend:
+
+```bash
+cd frontend
+npm run build
+```
+
+Compile the backend:
+
+```bash
+cd backend
+mvn -DskipTests compile
+```
+
+## Security and privacy
+
+- Passwords are hashed before storage.
+- Keep `JWT_SECRET` and database credentials out of GitHub.
+- Never commit real CVs, passwords, or other private user data.
+- Uploaded CVs are stored in MongoDB GridFS, not in the public frontend files.
