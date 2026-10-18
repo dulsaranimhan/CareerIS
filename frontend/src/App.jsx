@@ -502,7 +502,7 @@ function Dashboard({ session, onLogout, onHome }) {
           </section>
         ) : <StudentWorkspace session={session} />}
       </section>
-      <footer className="dashboard-footer"><span>© 2026 CareerIS</span><button type="button" onClick={onHome}>Back to home</button></footer>
+      <footer className="dashboard-footer"><div className="dashboard-footer-brand"><span className="brand-symbol"><span /></span><div><b>Career<span className="brand-is">IS</span></b><small>Students × Companies × Opportunity</small></div></div><span className="dashboard-footer-copy">© 2026 CareerIS · Your next chapter starts here.</span><button type="button" onClick={onHome}>Back to home <span aria-hidden="true">↗</span></button></footer>
     </main>
   );
 }
