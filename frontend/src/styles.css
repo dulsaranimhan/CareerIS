@@ -484,3 +484,40 @@
 .company-auth .auth-submit{background:linear-gradient(115deg,#b8784b,#95582f);box-shadow:0 8px 18px rgba(157,94,53,.2)}
 .company-auth .auth-footer{border-top-color:#ead8c9}
 @media(max-width:700px){.company-dashboard .dashboard-topbar .brand-symbol{background:#a6653a}}
+.brand-symbol{
+  overflow:hidden;
+  isolation:isolate;
+  background:linear-gradient(145deg,#8a5af0 0%,#713ce7 54%,#5e30c9 100%);
+  border:1px solid rgba(255,255,255,.38);
+  box-shadow:0 7px 16px rgba(104,58,206,.24),inset 0 1px 0 rgba(255,255,255,.3);
+  transition:transform .22s ease,box-shadow .22s ease;
+}
+.brand-symbol::before,.brand-symbol::after{
+  z-index:1;
+  top:50%;
+  left:50%;
+  width:2px;
+  height:58%;
+  border-radius:3px;
+  background:linear-gradient(to bottom,rgba(255,255,255,.7),#fff 35%,#fff 65%,rgba(255,255,255,.7));
+  transform:translate(-50%,-50%);
+}
+.brand-symbol::after{width:58%;height:2px}
+.brand-symbol span{
+  z-index:2;
+  top:50%;
+  left:50%;
+  width:8px;
+  height:8px;
+  border:1.5px solid #fff;
+  border-radius:2px;
+  background:#7843df;
+  box-shadow:0 0 0 2px rgba(255,255,255,.12);
+  transform:translate(-50%,-50%) rotate(45deg);
+}
+.brand:hover .brand-symbol{transform:translateY(-1px) rotate(-4deg);box-shadow:0 9px 20px rgba(104,58,206,.3),inset 0 1px 0 rgba(255,255,255,.36)}
+.site-footer .brand-symbol{width:30px;height:30px}
+.dashboard-footer-brand .brand-symbol{width:34px;height:34px}
+.company-dashboard .brand-symbol span,.company-auth .brand-symbol span{background:#a6653a}
+.company-auth .brand-is{color:#a6653a}
+@media(max-width:700px){.topbar .brand-symbol{width:34px;height:34px}.dashboard-topbar .brand-symbol{width:34px;height:34px}}
