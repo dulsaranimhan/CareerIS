@@ -548,6 +548,7 @@
 .auth-art-logo .brand-symbol::before{font-size:35px}
 .auth-art-logo .brand-symbol::after{font-size:11px}
 .auth-art-wordmark{color:#211d30;font:800 29px Manrope,sans-serif;letter-spacing:-1.2px}
+.auth-art-message strong{font-size:36px;letter-spacing:-1.8px}
 .auth-art-wordmark .brand-is{color:#7843e5}
 .company-auth .auth-art-logo .brand-symbol{background:linear-gradient(145deg,#bd8057,#96552f);box-shadow:0 16px 32px rgba(166,101,58,.27),inset 0 1px 0 rgba(255,255,255,.34)}
 .company-auth .auth-art-logo .brand-is{color:#a6653a}
