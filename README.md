@@ -152,6 +152,26 @@ cd backend
 mvn -DskipTests compile
 ```
 
+## Deploy the full website
+
+CareerIS can run as one Render web service: the container builds the React frontend and Spring Boot backend, and Spring Boot serves both from the same URL. MongoDB Atlas stores accounts, vacancies, applications, and uploaded CVs in GridFS.
+
+### Prepare MongoDB Atlas
+
+1. Create an Atlas project and a free cluster.
+2. Create a database user with a strong password and read/write access to the CareerIS database.
+3. Configure the Atlas IP access list so the Render service can reach the cluster. Render's free service does not provide a fixed outbound address, so for a student demo you may need the `0.0.0.0/0` entry. Atlas warns that this allows connection attempts from any IP; use a strong database password and do not reuse it elsewhere.
+4. Copy the Atlas driver connection string and set the database name to `careeris`, for example `mongodb+srv://<user>:<password>@<cluster>/careeris?retryWrites=true&w=majority`. URL-encode special characters in the password.
+
+### Create the Render service
+
+1. Push this repository to GitHub and sign in to Render.
+2. In Render, choose **New → Blueprint**, connect the `CareerIS` GitHub repository, and select the `main` branch.
+3. Render reads the root `render.yaml` and creates the `careeris` service from the Dockerfile. When prompted, provide the Atlas connection string as `MONGODB_URI`. Render generates `JWT_SECRET` for the service.
+4. Wait for the deploy to finish, then open the service URL. The website and API share that URL; check `<service-url>/api/health` for the API health response.
+
+The free Render web service spins down after 15 minutes without traffic, so its first request after idle may take about a minute to wake up. The service filesystem is temporary, but CareerIS stores CVs in MongoDB GridFS rather than on that filesystem.
+
 ## Security and privacy
 
 - Passwords are hashed before storage.
