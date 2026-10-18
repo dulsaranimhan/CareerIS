@@ -169,3 +169,64 @@
 @media(max-width:700px){.student-profile-form{gap:17px;padding:17px}.profile-intro h3{font-size:16px}.profile-intro p{font-size:11px}.profile-fields{grid-template-columns:1fr;gap:13px}.profile-wide{grid-column:auto}.profile-fields label{font-size:10px}.profile-fields input,.profile-fields textarea{font-size:12px}.cv-upload-row{align-items:start;flex-direction:column}.profile-form-footer{align-items:start;flex-direction:column}.profile-form-footer .button{align-self:stretch;justify-content:center}.applicant-profile-actions,.applicant-profile{margin-left:0}.applicant-profile{gap:11px;padding:12px}.student-tabs{overflow-x:auto;gap:17px}.student-tabs button{white-space:nowrap}}
 .interview-schedule-form{display:grid;gap:15px;margin:15px 0 0 46px;padding:18px;border:1px solid #e9e0fa;border-radius:8px;background:#fcfaff}.interview-schedule-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.interview-schedule-heading>div{display:grid;gap:5px}.interview-schedule-heading b{color:#393344;font-size:13px}.interview-schedule-heading span{color:#888191;font-size:11px}.interview-schedule-heading .schedule-saved{padding:6px 9px;border-radius:20px;background:#eff8f0;color:#4c8c5b;font-size:10px;font-weight:700}.interview-schedule-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}.interview-schedule-fields label{display:grid;gap:7px;color:#514b5b;font-size:11px;font-weight:700}.interview-schedule-fields label span{display:inline;color:#99929f;font-weight:400}.interview-schedule-fields input,.interview-schedule-fields textarea{width:100%;min-width:0;padding:10px 11px;border:1px solid #e8e4ed;border-radius:6px;background:#fff;color:#2d2936;font:400 12px 'DM Sans',sans-serif}.interview-schedule-fields input{height:42px}.interview-schedule-fields textarea{resize:vertical}.interview-schedule-form>.button{justify-self:end;height:40px;padding:0 15px;border:0;font:600 11px 'DM Sans',sans-serif;cursor:pointer}.interview-schedule-form>.button:disabled{opacity:.65;cursor:wait}.student-application-card{flex-wrap:wrap}.student-interview-details{flex:0 1 calc(100% - 60px);width:calc(100% - 60px);min-width:0;display:grid;gap:6px;margin-left:60px;padding:14px 16px;border:1px solid #e9e0fa;border-radius:7px;background:#fcfaff}.student-interview-details b{color:#5c3da0;font-size:13px}.student-interview-details span,.student-interview-details a,.student-interview-details small{overflow-wrap:anywhere;color:#716b7c;font-size:12px;line-height:1.55}.student-interview-details a{color:#7040d3;text-decoration:none}
 @media(max-width:700px){.interview-schedule-form,.student-interview-details{margin-left:0}.interview-schedule-form{padding:14px}.interview-schedule-fields{grid-template-columns:1fr}.interview-wide{grid-column:auto}.interview-schedule-heading b{font-size:12px}.interview-schedule-heading span{font-size:10px}.interview-schedule-fields label{font-size:11px}.interview-schedule-fields input,.interview-schedule-fields textarea{font-size:12px}.student-interview-details{flex-basis:100%;width:100%}}
+
+/* Soft CareerIS lavender atmosphere for the signed-in workspaces. */
+.dashboard-shell{
+  background:
+    radial-gradient(ellipse at 8% 14%,rgba(126,76,230,.075),transparent 31rem),
+    radial-gradient(ellipse at 94% 34%,rgba(190,163,247,.12),transparent 35rem),
+    #faf9fc;
+}
+.dashboard-metric,
+.student-workspace,
+.vacancy-workspace,
+.student-application-card,
+.company-application-card,
+.vacancy-card{
+  background-image:linear-gradient(135deg,rgba(255,255,255,.98) 0%,rgba(253,251,255,.98) 62%,rgba(248,244,255,.96) 100%);
+  border-color:#e9e2f4;
+  box-shadow:0 8px 28px rgba(70,42,122,.035);
+}
+.student-workspace,
+.vacancy-workspace{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+.student-workspace::before,
+.vacancy-workspace::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  top:-125px;
+  right:-115px;
+  width:330px;
+  height:280px;
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(143,99,232,.105),rgba(194,170,246,.045) 48%,transparent 72%);
+  pointer-events:none;
+}
+.dashboard-metric,
+.student-application-card,
+.company-application-card,
+.vacancy-card{
+  transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+.student-application-card:hover,
+.company-application-card:hover,
+.vacancy-card:hover{
+  border-color:#d9c8f7;
+  box-shadow:0 12px 30px rgba(87,52,151,.08);
+}
+.vacancy-form,
+.student-profile-form{
+  background:linear-gradient(140deg,#fdfcff 0%,#faf7ff 100%);
+  border-color:#e8def7;
+}
+.vacancy-form input,
+.vacancy-form textarea,
+.vacancy-form select,
+.student-profile-form input,
+.student-profile-form textarea{
+  background-color:#fff;
+}
