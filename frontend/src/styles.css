@@ -240,3 +240,57 @@
 .student-profile-form textarea{
   background-color:#fff;
 }
+.dashboard-topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  height:82px;
+  border-bottom:1px solid rgba(226,217,242,.85);
+  background:rgba(255,255,255,.86);
+  box-shadow:0 8px 26px rgba(66,42,112,.055);
+  backdrop-filter:blur(18px);
+}
+.dashboard-topbar::after{
+  content:"";
+  position:absolute;
+  right:0;
+  bottom:-1px;
+  left:0;
+  height:2px;
+  background:linear-gradient(90deg,transparent 4%,rgba(142,99,231,.18) 25%,rgba(142,99,231,.52) 50%,rgba(142,99,231,.18) 75%,transparent 96%);
+  pointer-events:none;
+}
+.dashboard-topbar .brand{
+  gap:13px;
+  font-size:22px;
+}
+.dashboard-topbar .brand-symbol{
+  width:40px;
+  height:40px;
+  border-radius:13px;
+  box-shadow:0 7px 16px rgba(112,64,223,.28),0 0 0 5px rgba(126,76,230,.07);
+}
+.dashboard-account{
+  gap:13px;
+  padding:7px 9px 7px 7px;
+  border:1px solid rgba(231,224,242,.9);
+  border-radius:999px;
+  background:linear-gradient(120deg,rgba(255,255,255,.9),rgba(248,244,255,.9));
+  box-shadow:0 4px 14px rgba(74,48,121,.045);
+}
+.dashboard-account button{
+  border-color:#e5daf6;
+  background:rgba(255,255,255,.8);
+  transition:background .2s ease,border-color .2s ease,color .2s ease;
+}
+.dashboard-account button:hover{
+  border-color:#cbb6f1;
+  background:#f4eeff;
+  color:#6233c8;
+}
+@media(max-width:700px){
+  .dashboard-topbar{height:70px}
+  .dashboard-topbar .brand{gap:10px;font-size:19px}
+  .dashboard-topbar .brand-symbol{width:34px;height:34px;border-radius:11px}
+  .dashboard-account{gap:8px;padding:5px 7px 5px 5px}
+}
