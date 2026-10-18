@@ -577,7 +577,7 @@ function App() {
           <span className="brand-symbol"><span /></span><span>Career<span className="brand-is">IS</span></span>
         </a>
         <nav className="main-nav" aria-label="Main navigation">
-          <a className="active" href="#opportunities">Find internships</a>
+          <a href="#opportunities">Find internships</a>
           <a href="#for-companies">For companies</a>
           <a href="#how-it-works">How it works</a>
         </nav>
