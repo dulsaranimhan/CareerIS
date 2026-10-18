@@ -73,7 +73,7 @@ function AuthScreen({ mode, role, onModeChange, onRoleChange, onHome, onLogin })
 
   return (
     <main className={`auth-shell ${isCompany ? 'company-auth' : ''}`}>
-      <div className="auth-art" aria-hidden="true"><span className="auth-orbit auth-orbit-one" /><span className="auth-orbit auth-orbit-two" /><span className="auth-art-star">✳</span><div className="auth-art-note"><span className="auth-art-note-icon">↗</span><span><b>A new chapter</b><small>begins with one step</small></span></div><div className="auth-art-message"><span>CareerIS</span><strong>Good beginnings<br />start here.</strong><small>Students × Companies × Opportunity</small></div></div>
+      <div className="auth-art" aria-hidden="true"><span className="auth-orbit auth-orbit-one" /><span className="auth-orbit auth-orbit-two" /><span className="auth-art-star">✳</span><div className="auth-art-note"><span className="auth-art-note-icon">↗</span><span><b>A new chapter</b><small>begins with one step</small></span></div><div className="auth-art-message"><div className="auth-art-logo"><span className="brand-symbol"><span /></span><span className="auth-art-wordmark">Career<span className="brand-is">IS</span></span></div><strong>Good beginnings<br />start here.</strong><small>Students × Companies × Opportunity</small></div></div>
       <section className="auth-panel" aria-labelledby="auth-title">
         <a className="brand auth-brand" href="#top" onClick={(event) => { event.preventDefault(); onHome(); }}><span className="brand-symbol"><span /></span><span>Career<span className="brand-is">IS</span></span></a>
         <div className="auth-content">

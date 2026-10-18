@@ -543,3 +543,12 @@
 }
 .brand-symbol span{display:none}
 @media(max-width:700px){.topbar .brand-symbol{width:34px;height:34px}.dashboard-topbar .brand-symbol{width:34px;height:34px}}
+.auth-art-logo{display:flex;align-items:center;gap:15px;margin-bottom:25px}
+.auth-art-logo .brand-symbol{width:76px;height:76px;margin:0;border-radius:23px;box-shadow:0 16px 32px rgba(104,58,206,.28),inset 0 1px 0 rgba(255,255,255,.34)}
+.auth-art-logo .brand-symbol::before{font-size:46px}
+.auth-art-logo .brand-symbol::after{font-size:14px}
+.auth-art-wordmark{color:#211d30;font:800 37px Manrope,sans-serif;letter-spacing:-1.5px}
+.auth-art-wordmark .brand-is{color:#7843e5}
+.company-auth .auth-art-logo .brand-symbol{background:linear-gradient(145deg,#bd8057,#96552f);box-shadow:0 16px 32px rgba(166,101,58,.27),inset 0 1px 0 rgba(255,255,255,.34)}
+.company-auth .auth-art-logo .brand-is{color:#a6653a}
+@media(max-width:700px){.auth-art-logo{gap:12px;margin-bottom:22px}.auth-art-logo .brand-symbol{width:66px;height:66px;border-radius:20px}.auth-art-logo .brand-symbol::before{font-size:40px}.auth-art-wordmark{font-size:31px}}
