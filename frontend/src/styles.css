@@ -421,3 +421,12 @@
   .site-footer>div a{padding:7px 8px!important;font-size:10px}
   .auth-footer{font-size:9px;flex-wrap:wrap}
 }
+.topbar .main-nav a[href="#opportunities"],
+.topbar .main-nav a[href="#opportunities"]:link,
+.topbar .main-nav a[href="#opportunities"]:visited,
+.topbar .main-nav a[href="#opportunities"]:hover,
+.topbar .main-nav a[href="#opportunities"]:focus,
+.topbar .main-nav a[href="#opportunities"]:active{
+  color:#7040d4!important;
+  text-decoration:none;
+}
