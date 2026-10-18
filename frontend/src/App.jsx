@@ -72,7 +72,7 @@ function AuthScreen({ mode, role, onModeChange, onRoleChange, onHome, onLogin })
   }
 
   return (
-    <main className="auth-shell">
+    <main className={`auth-shell ${isCompany ? 'company-auth' : ''}`}>
       <div className="auth-art" aria-hidden="true"><span className="auth-orbit auth-orbit-one" /><span className="auth-orbit auth-orbit-two" /><span className="auth-art-star">✳</span><div className="auth-art-note"><span className="auth-art-note-icon">↗</span><span><b>A new chapter</b><small>begins with one step</small></span></div><div className="auth-art-message"><span>CareerIS</span><strong>Good beginnings<br />start here.</strong><small>Students × Companies × Opportunity</small></div></div>
       <section className="auth-panel" aria-labelledby="auth-title">
         <a className="brand auth-brand" href="#top" onClick={(event) => { event.preventDefault(); onHome(); }}><span className="brand-symbol"><span /></span><span>Career<span className="brand-is">IS</span></span></a>
@@ -452,7 +452,7 @@ function Dashboard({ session, onLogout, onHome }) {
   }
 
   return (
-    <main className="dashboard-shell">
+    <main className={`dashboard-shell ${isCompany ? 'company-dashboard' : 'student-dashboard'}`}>
       <header className="dashboard-topbar"><a className="brand" href="#top" onClick={(event) => { event.preventDefault(); onHome(); }}><span className="brand-symbol"><span /></span><span>Career<span className="brand-is">IS</span></span></a><div className="dashboard-account"><span className="dashboard-avatar">{firstName.charAt(0).toUpperCase()}</span><span><b>{session.user.name}</b><small>{isCompany ? 'Company account' : 'Student account'}</small></span><button type="button" onClick={onLogout}>Sign out</button></div></header>
       <section className="dashboard-content">
         <p className="eyebrow">{isCompany ? 'COMPANY WORKSPACE' : 'STUDENT WORKSPACE'}</p>

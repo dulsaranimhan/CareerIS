@@ -421,3 +421,66 @@
   .site-footer>div a{padding:7px 8px!important;font-size:10px}
   .auth-footer{font-size:9px;flex-wrap:wrap}
 }
+.company-card{
+  background:radial-gradient(circle at 88% 18%,rgba(177,119,73,.15),transparent 13rem),linear-gradient(135deg,#f7eee5,#f2e4d8);
+}
+.company-card .company-icon{background:#ead4c1;color:#98603d}
+.company-card .eyebrow,.company-card .text-link{color:#98603d}
+.company-card .company-stamp{border-color:#dbc0a8;color:#a87858}
+.company-dashboard{
+  --company-accent:#a6653a;
+  --company-accent-deep:#874b2d;
+  --company-tint:#f6ebe1;
+  --company-pale:#fcf8f4;
+  --company-line:#ead8c9;
+  background:
+    radial-gradient(ellipse at 8% 14%,rgba(172,111,68,.09),transparent 31rem),
+    radial-gradient(ellipse at 94% 34%,rgba(218,174,139,.15),transparent 35rem),
+    repeating-linear-gradient(135deg,rgba(166,101,58,.018) 0,rgba(166,101,58,.018) 1px,transparent 1px,transparent 28px),
+    repeating-linear-gradient(45deg,rgba(166,101,58,.014) 0,rgba(166,101,58,.014) 1px,transparent 1px,transparent 28px),
+    #fbf9f7;
+}
+.company-dashboard .dashboard-topbar{border-color:rgba(234,216,201,.9);background:rgba(255,253,250,.9)}
+.company-dashboard .dashboard-topbar::after{background:linear-gradient(90deg,transparent 4%,rgba(185,128,88,.2) 25%,rgba(166,101,58,.56) 50%,rgba(185,128,88,.2) 75%,transparent 96%)}
+.company-dashboard .dashboard-topbar .brand-symbol,.company-dashboard .dashboard-footer-brand .brand-symbol{background:#a6653a;box-shadow:0 7px 16px rgba(166,101,58,.24),0 0 0 5px rgba(166,101,58,.07)}
+.company-dashboard .brand-is,.company-dashboard .dashboard-footer-brand .brand-is{color:#a6653a}
+.company-dashboard .dashboard-account{border-color:#ead8c9;background:linear-gradient(120deg,rgba(255,255,255,.92),rgba(250,241,233,.92))}
+.company-dashboard .dashboard-avatar{background:#f1e0d1;color:#9b5b34}
+.company-dashboard .dashboard-account button:hover{border-color:#d7b99f;background:#f6ebe1;color:#874b2d}
+.company-dashboard .dashboard-content>.eyebrow,.company-dashboard .vacancy-section-heading .eyebrow{color:#a6653a}
+.company-dashboard .dashboard-date{border-color:#ead8c9;background:#fffaf6;color:#956344}
+.company-dashboard .dashboard-metric,.company-dashboard .vacancy-workspace,.company-dashboard .vacancy-form,.company-dashboard .vacancy-card,.company-dashboard .company-application-card{
+  border-color:#eaded3;
+  box-shadow:0 8px 28px rgba(116,75,48,.045);
+}
+.company-dashboard .dashboard-metric{background:linear-gradient(135deg,#fff 0%,#fffdfa 65%,#fbf3ec 100%)}
+.company-dashboard .dashboard-metric-icon,.company-dashboard .dashboard-metric:nth-child(2) .dashboard-metric-icon,.company-dashboard .dashboard-metric:nth-child(3) .dashboard-metric-icon{background:#f5e8dc;color:#a6653a}
+.company-dashboard .vacancy-workspace{background-image:radial-gradient(ellipse at 94% 6%,rgba(180,122,81,.12),transparent 24rem),repeating-linear-gradient(135deg,rgba(166,101,58,.024) 0,rgba(166,101,58,.024) 1px,transparent 1px,transparent 34px),repeating-linear-gradient(45deg,rgba(166,101,58,.017) 0,rgba(166,101,58,.017) 1px,transparent 1px,transparent 34px),linear-gradient(135deg,#fff 0%,#fdfaf7 72%,#f8efe7 100%)}
+.company-dashboard .vacancy-workspace::before{background:radial-gradient(ellipse,rgba(180,122,81,.12),rgba(216,177,146,.05) 48%,transparent 72%)}
+.company-dashboard .vacancy-form{background:linear-gradient(140deg,#fffdfb 0%,#fbf4ed 100%)}
+.company-dashboard .vacancy-form-icon{background:#f2e2d4;color:#a6653a}
+.company-dashboard .vacancy-new-button,.company-dashboard .vacancy-form-footer .button,.company-dashboard .interview-schedule-form>.button{background:linear-gradient(115deg,#b8784b,#95582f);box-shadow:0 8px 18px rgba(157,94,53,.2)}
+.company-dashboard .vacancy-fields input:focus,.company-dashboard .vacancy-fields select:focus,.company-dashboard .vacancy-fields textarea:focus,.company-dashboard .interview-schedule-fields input:focus,.company-dashboard .interview-schedule-fields textarea:focus{border-color:#bd8b67;box-shadow:0 0 0 3px rgba(166,101,58,.13)}
+.company-dashboard .vacancy-card,.company-dashboard .company-application-card{background-image:linear-gradient(135deg,rgba(255,255,255,.99),rgba(255,251,247,.98) 68%,rgba(249,240,231,.96))}
+.company-dashboard .vacancy-card:hover,.company-dashboard .company-application-card:hover{border-color:#d8b99f;box-shadow:0 12px 30px rgba(116,75,48,.09)}
+.company-dashboard .vacancy-card-actions button:not(.vacancy-close):not(.vacancy-reopen),.company-dashboard .applicant-profile-actions button{border-color:#e5d1bf;color:#94603e}
+.company-dashboard .vacancy-card-actions button:not(.vacancy-close):not(.vacancy-reopen):hover,.company-dashboard .applicant-profile-actions button:hover{background:#f8eee5}
+.company-dashboard .company-review-section{border-top-color:#e8d9cd}
+.company-dashboard .interview-schedule-form,.company-dashboard .applicant-profile{border-color:#ead8c9;background:#fcf7f2}
+.company-dashboard .interview-schedule-heading .schedule-saved{background:#edf6ee;color:#4c8c5b}
+.company-dashboard .dashboard-footer{border-color:#ead8c9;background:radial-gradient(ellipse at 10% 100%,rgba(180,122,81,.14),transparent 30rem),linear-gradient(110deg,#fffdfa,#fbf3ed)}
+.company-dashboard .dashboard-footer::before{background:linear-gradient(90deg,transparent,rgba(166,101,58,.36),transparent)}
+.company-dashboard .dashboard-footer button{border-color:#e4cfbd;color:#905b38}
+.company-dashboard .dashboard-footer button:hover{background:#fff8f2}
+.company-auth .auth-art{background:radial-gradient(ellipse at 48% 43%,#f7ede4 0,#f0e0d2 47%,#e8d2c0 100%)}
+.company-auth .auth-art:before,.company-auth .auth-art:after,.company-auth .auth-orbit{border-color:#d4b398}
+.company-auth .auth-art-star{color:#a6653a}
+.company-auth .auth-art-message>span{background:#a6653a;box-shadow:0 12px 26px rgba(166,101,58,.28)}
+.company-auth .auth-art-note-icon{background:#f3e4d7;color:#9c603a}
+.company-auth .auth-brand .brand-symbol{background:#a6653a;box-shadow:0 7px 16px rgba(166,101,58,.24),0 0 0 5px rgba(166,101,58,.07)}
+.company-auth .auth-content>.eyebrow,.company-auth .auth-back,.company-auth .auth-switch button,.company-auth .forgot-link{color:#a6653a}
+.company-auth .account-type button.selected{color:#90542f}
+.company-auth .auth-form input:focus{border-color:#bd8b67;box-shadow:0 0 0 3px rgba(166,101,58,.13)}
+.company-auth .auth-submit{background:linear-gradient(115deg,#b8784b,#95582f);box-shadow:0 8px 18px rgba(157,94,53,.2)}
+.company-auth .auth-footer{border-top-color:#ead8c9}
+@media(max-width:700px){.company-dashboard .dashboard-topbar .brand-symbol{background:#a6653a}}
