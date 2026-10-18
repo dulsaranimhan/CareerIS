@@ -175,7 +175,17 @@
   background:
     radial-gradient(ellipse at 8% 14%,rgba(126,76,230,.075),transparent 31rem),
     radial-gradient(ellipse at 94% 34%,rgba(190,163,247,.12),transparent 35rem),
+    repeating-linear-gradient(135deg,rgba(126,76,230,.018) 0,rgba(126,76,230,.018) 1px,transparent 1px,transparent 28px),
+    repeating-linear-gradient(45deg,rgba(126,76,230,.014) 0,rgba(126,76,230,.014) 1px,transparent 1px,transparent 28px),
     #faf9fc;
+}
+.student-workspace,
+.vacancy-workspace{
+  background-image:
+    radial-gradient(ellipse at 94% 6%,rgba(151,112,226,.10),transparent 24rem),
+    repeating-linear-gradient(135deg,rgba(126,76,230,.025) 0,rgba(126,76,230,.025) 1px,transparent 1px,transparent 34px),
+    repeating-linear-gradient(45deg,rgba(126,76,230,.018) 0,rgba(126,76,230,.018) 1px,transparent 1px,transparent 34px),
+    linear-gradient(135deg,#fff 0%,#fcfaff 72%,#f8f4ff 100%);
 }
 .dashboard-metric,
 .student-workspace,
