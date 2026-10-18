@@ -3,6 +3,7 @@ services:
     name: careeris
     runtime: docker
     plan: free
+    region: singapore
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /api/health
