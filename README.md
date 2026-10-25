@@ -54,6 +54,14 @@ backend/    Spring Boot REST API
 
 ## Run locally
 
+To start the backend and frontend together on macOS or Linux, run this from the repository root:
+
+```bash
+./start-dev.sh
+```
+
+Press `Ctrl+C` to stop both servers. Make sure MongoDB is running first. If you prefer, use the separate terminal steps below.
+
 ### Prerequisites
 
 - Node.js and npm
