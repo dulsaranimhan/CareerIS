@@ -553,3 +553,27 @@
 .company-auth .auth-art-logo .brand-symbol{background:linear-gradient(145deg,#bd8057,#96552f);box-shadow:0 16px 32px rgba(166,101,58,.27),inset 0 1px 0 rgba(255,255,255,.34)}
 .company-auth .auth-art-logo .brand-is{color:#a6653a}
 @media(max-width:700px){.auth-art-logo .brand-symbol{width:54px;height:54px;border-radius:17px}.auth-art-logo .brand-symbol::before{font-size:33px}.auth-art-wordmark{font-size:27px}}
+
+/* Shared interaction foundations across the landing, auth, and workspace screens. */
+:root{
+  --surface:#fff;
+  --surface-soft:#fcfaff;
+  --focus-ring:rgba(112,64,223,.22);
+  --card-shadow:0 12px 32px rgba(53,35,89,.075);
+}
+*:focus-visible{
+  outline:3px solid var(--focus-ring);
+  outline-offset:3px;
+}
+button,a,input,select,textarea{
+  -webkit-tap-highlight-color:transparent;
+}
+::selection{background:#e9ddff;color:#30224e}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}
