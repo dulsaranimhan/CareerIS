@@ -582,7 +582,7 @@ function App() {
           <a href="#how-it-works">How it works</a>
         </nav>
         <div className="nav-actions"><a className="sign-in" href="#sign-in/student" onClick={(event) => { event.preventDefault(); openAuth('sign-in'); }}>Sign in</a><a className="button button-dark nav-join" href="#register/student" onClick={(event) => { event.preventDefault(); openAuth('register'); }}>Join CareerIS <ArrowUpRight /></a></div>
-        <a className="mobile-join" href="#register/student" onClick={(event) => { event.preventDefault(); openAuth('register'); }}>Join <ArrowUpRight /></a>
+        <div className="mobile-actions"><a className="mobile-sign-in" href="#sign-in/student" onClick={(event) => { event.preventDefault(); openAuth('sign-in'); }}>Sign in</a><a className="mobile-join" href="#register/student" onClick={(event) => { event.preventDefault(); openAuth('register'); }}>Join <ArrowUpRight /></a></div>
       </header>
 
       <section className="hero" aria-labelledby="hero-title">
