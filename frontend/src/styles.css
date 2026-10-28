@@ -577,3 +577,33 @@ button,a,input,select,textarea{
     transition-duration:.01ms!important;
   }
 }
+
+/* Give cards and controls the same quiet feedback wherever they appear. */
+.internship-card,.split-card,.dashboard-metric,.vacancy-card,
+.student-vacancy-card,.student-application-card,.company-application-card{
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.internship-card:hover,.split-card:hover,.dashboard-metric:hover{
+  transform:translateY(-3px);
+  border-color:#dfd3f3;
+  box-shadow:var(--card-shadow);
+}
+.vacancy-search:focus-within,.profile-fields input:focus-visible,
+.profile-fields textarea:focus-visible,.vacancy-fields input:focus-visible,
+.vacancy-fields select:focus-visible,.vacancy-fields textarea:focus-visible,
+.student-apply-form textarea:focus-visible,.interview-schedule-fields input:focus-visible,
+.interview-schedule-fields textarea:focus-visible{
+  border-color:#9b7bdb;
+  box-shadow:0 0 0 4px var(--focus-ring);
+}
+.button:focus-visible,.nav-actions a:focus-visible,.mobile-actions a:focus-visible{
+  outline-offset:4px;
+}
+.student-tabs button:focus-visible,.company-review-actions button:focus-visible,
+.vacancy-card-actions button:focus-visible{
+  position:relative;
+  z-index:1;
+}
+@media(max-width:700px){
+  .internship-card:hover,.split-card:hover,.dashboard-metric:hover{transform:none}
+}
