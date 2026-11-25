@@ -6,7 +6,7 @@
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO] 
 [INFO] --- jacoco:0.8.12:prepare-agent (prepare-agent) @ careeris-api ---
-[INFO] argLine set to -javaagent:/root/.m2/repository/org/jacoco/org.jacoco.agent/0.8.12/org.jacoco.agent-0.8.12-runtime.jar=destfile=/home/claude/repo/CareerIS/backend/target/jacoco.exec
+[INFO] argLine set to -javaagent:/root/.m2/repository/org/jacoco/org.jacoco.agent/0.8.12/org.jacoco.agent-0.8.12-runtime.jar=destfile=/home/qa/CareerIS/backend/target/jacoco.exec
 [INFO] 
 [INFO] --- resources:3.3.1:resources (default-resources) @ careeris-api ---
 [INFO] Copying 1 resource from src/main/resources to target/classes
@@ -40,7 +40,7 @@
 
  :: Spring Boot ::                (v3.4.1)
 
-2026-11-25T14:18:58.733+05:30  INFO 2306 --- [careeris-api] [           main] c.a.b.CvUploadAndPasswordBoundaryApiTest : Starting CvUploadAndPasswordBoundaryApiTest using Java 21.0.13.1 with PID 2306 (started by root in /home/claude/repo/CareerIS/backend)
+2026-11-25T14:18:58.733+05:30  INFO 2306 --- [careeris-api] [           main] c.a.b.CvUploadAndPasswordBoundaryApiTest : Starting CvUploadAndPasswordBoundaryApiTest using Java 21.0.13.1 with PID 2306 (started by root in /home/qa/CareerIS/backend)
 2026-11-25T14:18:58.734+05:30  INFO 2306 --- [careeris-api] [           main] c.a.b.CvUploadAndPasswordBoundaryApiTest : The following 1 profile is active: "test"
 2026-11-25T14:19:00.486+05:30  INFO 2306 --- [careeris-api] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
 2026-11-25T14:19:00.569+05:30  INFO 2306 --- [careeris-api] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 74 ms. Found 3 MongoDB repository interfaces.
@@ -325,7 +325,7 @@ Expected status code <400> but was <200>.
 [INFO] ------------------------------------------------------------------------
 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.2:test (default-test) on project careeris-api: There are test failures.
 [ERROR] 
-[ERROR] See /home/claude/repo/CareerIS/backend/target/surefire-reports for the individual test results.
+[ERROR] See /home/qa/CareerIS/backend/target/surefire-reports for the individual test results.
 [ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
 [ERROR] -> [Help 1]
 [ERROR] 
