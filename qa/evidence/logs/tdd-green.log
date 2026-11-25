@@ -6,7 +6,7 @@
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO] 
 [INFO] --- jacoco:0.8.12:prepare-agent (prepare-agent) @ careeris-api ---
-[INFO] argLine set to -javaagent:/root/.m2/repository/org/jacoco/org.jacoco.agent/0.8.12/org.jacoco.agent-0.8.12-runtime.jar=destfile=/home/claude/repo/CareerIS/backend/target/jacoco.exec
+[INFO] argLine set to -javaagent:/root/.m2/repository/org/jacoco/org.jacoco.agent/0.8.12/org.jacoco.agent-0.8.12-runtime.jar=destfile=/home/qa/CareerIS/backend/target/jacoco.exec
 [INFO] 
 [INFO] --- resources:3.3.1:resources (default-resources) @ careeris-api ---
 [INFO] Copying 1 resource from src/main/resources to target/classes
