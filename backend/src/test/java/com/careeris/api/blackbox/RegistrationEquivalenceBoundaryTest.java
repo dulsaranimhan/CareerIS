@@ -83,14 +83,12 @@ class RegistrationEquivalenceBoundaryTest {
         assertThat(violationsOn(request("Nimal", email, "Password123"), "email")).isNotEmpty();
     }
 
-    @Test
-    @DisplayName("TC-BB-EM-OBS: e-mail without a domain suffix is REJECTED - BUG-05 FIX")
-    void emailWithoutTopLevelDomainIsRejected() {
-        // BUG-05 FIX: Email addresses without a valid domain suffix must be rejected.
-        assertThat(violationsOn(
-                request("Nimal", "nimal@localhost", "Password123"),
-                "email"
-        )).isNotEmpty();
+    @ParameterizedTest(name = "TC-BB-EM-05.{index}: e-mail without a top-level domain ''{0}'' is rejected (BUG-05 regression)")
+    @ValueSource(strings = {"nimal@localhost", "nimal@campus", "nimal@example.c"})
+    void emailWithoutTopLevelDomainIsRejected(String email) {
+        // BUG-05: before the fix Bean Validation @Email accepted "nimal@localhost".
+        // Fixed by Liyanarachchi L.A.E.E (EG/2023/5708) in RegisterRequest; this test now guards the fix.
+        assertThat(violationsOn(request("Nimal", email, "Password123"), "email")).isNotEmpty();
     }
 
     // ---------- EP: role ----------
