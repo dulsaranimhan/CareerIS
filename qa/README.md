@@ -5,7 +5,7 @@ Wanasinghe W.M.C.O.B (EG/2023/5941), Madhusanka E.M.P (EG/2023/5712)
 
 | Folder | What is inside | Owner |
 |---|---|---|
-| `docs/` | Comprehensive QA report (Word) | All (compiled by Liyanarachchi) |
+| `docs/` | Link to the final QA report (PDF and Word) in the shared Drive folder | All (compiled by Liyanarachchi) |
 | `test-cases/` | Test case workbook: detailed test cases, automated test inventory, bug log, environment, summary | Liyanarachchi |
 | `defects/` | One markdown report per bug + `jira-import.csv` for the Jira board | Liyanarachchi |
 | `performance/` | JMeter plan `careeris-load-test.jmx`, results (`.jtl`) and HTML dashboards (50 and 200 users) | Madhusanka |
