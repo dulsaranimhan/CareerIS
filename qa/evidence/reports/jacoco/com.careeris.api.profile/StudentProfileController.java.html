@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StudentProfileController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CareerIS API</a> &gt; <a href="index.source.html" class="el_package">com.careeris.api.profile</a> &gt; <span class="el_source">StudentProfileController.java</span></div><h1>StudentProfileController.java</h1><pre class="source lang-java linenums">package com.careeris.api.profile;
+
+import java.io.IOException;
+
+import jakarta.validation.Valid;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+@RestController
+@RequestMapping(&quot;/api/student/profile&quot;)
+public class StudentProfileController {
+    private final StudentProfileService profiles;
+<span class="fc" id="L25">    public StudentProfileController(StudentProfileService profiles) { this.profiles = profiles; }</span>
+
+    @GetMapping
+<span class="nc" id="L28">    public StudentProfileResponse get(Authentication auth) { return profiles.getOwnProfile(auth.getName()); }</span>
+
+    @PutMapping
+    public StudentProfileResponse save(@Valid @RequestBody StudentProfileRequest request, Authentication auth) {
+<span class="fc" id="L32">        return profiles.saveProfile(auth.getName(), request);</span>
+    }
+
+    @PostMapping(&quot;/cv&quot;)
+    public StudentProfileResponse upload(@RequestParam(&quot;file&quot;) MultipartFile file, Authentication auth) {
+<span class="fc" id="L37">        return profiles.uploadCv(auth.getName(), file);</span>
+    }
+
+    @GetMapping(&quot;/cv&quot;)
+    public ResponseEntity&lt;Resource&gt; download(Authentication auth) throws IOException {
+<span class="fc" id="L42">        return response(profiles.downloadOwn(auth.getName()));</span>
+    }
+
+    static ResponseEntity&lt;Resource&gt; response(StudentProfileService.CvDownload cv) throws IOException {
+<span class="fc" id="L46">        return ResponseEntity.ok().contentType(MediaType.parseMediaType(cv.contentType()))</span>
+<span class="fc" id="L47">                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(cv.filename()).build().toString())</span>
+<span class="fc" id="L48">                .body(cv.resource());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

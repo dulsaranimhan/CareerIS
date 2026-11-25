@@ -84,10 +84,13 @@ class RegistrationEquivalenceBoundaryTest {
     }
 
     @Test
-    @DisplayName("TC-BB-EM-OBS: e-mail without a domain suffix (user@localhost) is ACCEPTED - see BUG-05")
-    void emailWithoutTopLevelDomainIsAccepted() {
-        // Observation: Bean Validation @Email accepts "nimal@localhost". Real users can't receive mail there.
-        assertThat(violationsOn(request("Nimal", "nimal@localhost", "Password123"), "email")).isEmpty();
+    @DisplayName("TC-BB-EM-OBS: e-mail without a domain suffix is REJECTED - BUG-05 FIX")
+    void emailWithoutTopLevelDomainIsRejected() {
+        // BUG-05 FIX: Email addresses without a valid domain suffix must be rejected.
+        assertThat(violationsOn(
+                request("Nimal", "nimal@localhost", "Password123"),
+                "email"
+        )).isNotEmpty();
     }
 
     // ---------- EP: role ----------

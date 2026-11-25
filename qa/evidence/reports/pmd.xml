@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 https://pmd.github.io/schema/report_2_0_0.xsd" version="7.7.0" timestamp="2026-11-24T20:54:01.985">
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/CareerIsApplication.java">
+<violation beginline="8" endline="8" begincolumn="8" endcolumn="13" rule="UseUtilityClass" ruleset="Design" package="com.careeris.api" class="CareerIsApplication" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#useutilityclass" priority="3">
+This utility class has a non-private constructor
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/SecurityConfig.java">
+<violation beginline="35" endline="35" begincolumn="64" endcolumn="80" rule="SignatureDeclareThrowsException" ruleset="Design" package="com.careeris.api" class="SecurityConfig" method="securityFilterChain" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#signaturedeclarethrowsexception" priority="3">
+A method/constructor should not explicitly throw java.lang.Exception
+</violation>
+<violation beginline="86" endline="86" begincolumn="31" endcolumn="33" rule="AvoidLiteralsInIfCondition" ruleset="Error Prone" package="com.careeris.api" class="SecurityConfig" method="jwtSecretKey" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_errorprone.html#avoidliteralsinifcondition" priority="3">
+Avoid using literals in if statements
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/application/ApplicationService.java">
+<violation beginline="52" endline="52" begincolumn="23" endcolumn="46" rule="LawOfDemeter" ruleset="Design" package="com.careeris.api.application" class="ApplicationService" method="updateStatus" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#lawofdemeter" priority="3">
+Call to `getStatus` on foreign value `application` (degree 1)
+</violation>
+<violation beginline="64" endline="64" begincolumn="13" endcolumn="36" rule="LawOfDemeter" ruleset="Design" package="com.careeris.api.application" class="ApplicationService" method="scheduleInterview" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#lawofdemeter" priority="3">
+Call to `getStatus` on foreign value `application` (degree 1)
+</violation>
+<violation beginline="83" endline="83" begincolumn="13" endcolumn="34" rule="LawOfDemeter" ruleset="Design" package="com.careeris.api.application" class="ApplicationService" method="apply" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#lawofdemeter" priority="3">
+Call to `getDeadline` on foreign value `vacancy` (degree 1)
+</violation>
+<violation beginline="92" endline="92" begincolumn="19" endcolumn="112" rule="PreserveStackTrace" ruleset="Best Practices" package="com.careeris.api.application" class="ApplicationService" method="apply" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_bestpractices.html#preservestacktrace" priority="3">
+Thrown exception does not preserve the stack trace of exception 'exception' on all code paths
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/application/InternshipApplication.java">
+<violation beginline="18" endline="18" begincolumn="8" endcolumn="13" rule="DataClass" ruleset="Design" package="com.careeris.api.application" class="InternshipApplication" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#dataclass" priority="3">
+The class 'InternshipApplication' is suspected to be a Data Class (WOC=5.556%, NOPA=0, NOAM=17, WMC=23)
+</violation>
+<violation beginline="18" endline="84" begincolumn="36" endcolumn="2" rule="TooManyFields" ruleset="Design" package="com.careeris.api.application" class="InternshipApplication" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#toomanyfields" priority="3">
+Too many fields
+</violation>
+<violation beginline="81" endline="81" begincolumn="66" endcolumn="70" rule="NullAssignment" ruleset="Error Prone" package="com.careeris.api.application" class="InternshipApplication" method="setInterview" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_errorprone.html#nullassignment" priority="3">
+Assigning an Object to null is a code smell.  Consider refactoring.
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/auth/AuthExceptionHandler.java">
+<violation beginline="19" endline="19" begincolumn="75" endcolumn="84" rule="AvoidDuplicateLiterals" ruleset="Error Prone" package="com.careeris.api.auth" class="AuthExceptionHandler" method="handleInvalidCredentials" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_errorprone.html#avoidduplicateliterals" priority="3">
+The String literal "message" appears 8 times in this file; the first occurrence is on line 19
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/auth/AuthService.java">
+<violation beginline="19" endline="19" begincolumn="24" endcolumn="32" rule="CyclomaticComplexity" ruleset="Design" package="com.careeris.api.auth" class="AuthService" method="register" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#cyclomaticcomplexity" priority="3">
+The method 'register(RegisterRequest)' has a cyclomatic complexity of 10.
+</violation>
+<violation beginline="42" endline="42" begincolumn="19" endcolumn="56" rule="PreserveStackTrace" ruleset="Best Practices" package="com.careeris.api.auth" class="AuthService" method="register" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_bestpractices.html#preservestacktrace" priority="3">
+Thrown exception does not preserve the stack trace of exception 'exception' on all code paths
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/auth/EmailAlreadyRegisteredException.java">
+<violation beginline="3" endline="3" begincolumn="8" endcolumn="13" rule="MissingSerialVersionUID" ruleset="Error Prone" package="com.careeris.api.auth" class="EmailAlreadyRegisteredException" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_errorprone.html#missingserialversionuid" priority="3">
+Classes implementing Serializable should set a serialVersionUID
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/auth/InvalidCredentialsException.java">
+<violation beginline="3" endline="3" begincolumn="8" endcolumn="13" rule="MissingSerialVersionUID" ruleset="Error Prone" package="com.careeris.api.auth" class="InvalidCredentialsException" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_errorprone.html#missingserialversionuid" priority="3">
+Classes implementing Serializable should set a serialVersionUID
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/auth/JwtTokenService.java">
+<violation beginline="32" endline="32" begincolumn="41" endcolumn="58" rule="LawOfDemeter" ruleset="Design" package="com.careeris.api.auth" class="JwtTokenService" method="issueFor" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#lawofdemeter" priority="3">
+Call to `getRole` on foreign value `account` (degree 1)
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/auth/UserAccount.java">
+<violation beginline="12" endline="12" begincolumn="8" endcolumn="13" rule="DataClass" ruleset="Design" package="com.careeris.api.auth" class="UserAccount" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#dataclass" priority="3">
+The class 'UserAccount' is suspected to be a Data Class (WOC=0.000%, NOPA=0, NOAM=21, WMC=24)
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/profile/StudentProfileService.java">
+<violation beginline="51" endline="51" begincolumn="35" endcolumn="43" rule="CyclomaticComplexity" ruleset="Design" package="com.careeris.api.profile" class="StudentProfileService" method="uploadCv" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#cyclomaticcomplexity" priority="3">
+The method 'uploadCv(String, MultipartFile)' has a cyclomatic complexity of 13.
+</violation>
+<violation beginline="70" endline="70" begincolumn="19" endcolumn="111" rule="PreserveStackTrace" ruleset="Best Practices" package="com.careeris.api.profile" class="StudentProfileService" method="uploadCv" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_bestpractices.html#preservestacktrace" priority="3">
+Thrown exception does not preserve the stack trace of exception 'exception' on all code paths
+</violation>
+<violation beginline="100" endline="100" begincolumn="13" endcolumn="30" rule="LawOfDemeter" ruleset="Design" package="com.careeris.api.profile" class="StudentProfileService" method="findStudent" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#lawofdemeter" priority="3">
+Call to `getRole` on foreign value `student` (degree 1)
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/vacancy/Vacancy.java">
+<violation beginline="12" endline="12" begincolumn="8" endcolumn="13" rule="DataClass" ruleset="Design" package="com.careeris.api.vacancy" class="Vacancy" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#dataclass" priority="3">
+The class 'Vacancy' is suspected to be a Data Class (WOC=7.143%, NOPA=0, NOAM=13, WMC=16)
+</violation>
+<violation beginline="35" endline="35" begincolumn="9" endcolumn="28" rule="ConstructorCallsOverridableMethod" ruleset="Error Prone" package="com.careeris.api.vacancy" class="Vacancy" method="Vacancy" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_errorprone.html#constructorcallsoverridablemethod" priority="1">
+Overridable method called during object construction: Vacancy.updateFrom(VacancyRequest) 
+</violation>
+</file>
+<file name="/home/claude/repo/CareerIS/backend/src/main/java/com/careeris/api/vacancy/VacancyService.java">
+<violation beginline="36" endline="36" begincolumn="13" endcolumn="34" rule="LawOfDemeter" ruleset="Design" package="com.careeris.api.vacancy" class="VacancyService" method="getOpen" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.7.0/pmd_rules_java_design.html#lawofdemeter" priority="3">
+Call to `getDeadline` on foreign value `vacancy` (degree 1)
+</violation>
+</file>
+<configerror rule="LoosePackageCoupling" msg="No packages or classes specified"/>
+</pmd>

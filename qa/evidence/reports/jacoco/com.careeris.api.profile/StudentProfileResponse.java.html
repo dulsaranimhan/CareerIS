@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StudentProfileResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CareerIS API</a> &gt; <a href="index.source.html" class="el_package">com.careeris.api.profile</a> &gt; <span class="el_source">StudentProfileResponse.java</span></div><h1>StudentProfileResponse.java</h1><pre class="source lang-java linenums">package com.careeris.api.profile;
+
+import java.util.List;
+
+import com.careeris.api.auth.UserAccount;
+
+<span class="fc" id="L7">public record StudentProfileResponse(</span>
+        String studentId,
+        String name,
+        String email,
+        String education,
+        String qualification,
+        String profileSummary,
+        List&lt;String&gt; skills,
+        String cvFileName) {
+    public static StudentProfileResponse from(UserAccount student) {
+<span class="fc" id="L17">        return new StudentProfileResponse(student.getId(), student.getDisplayName(), student.getEmail(),</span>
+<span class="fc" id="L18">                student.getEducation(), student.getQualification(), student.getProfileSummary(),</span>
+<span class="fc" id="L19">                student.getSkills(), student.getCvFileName());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
