@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApplicationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CareerIS API</a> &gt; <a href="index.source.html" class="el_package">com.careeris.api.application</a> &gt; <span class="el_source">ApplicationService.java</span></div><h1>ApplicationService.java</h1><pre class="source lang-java linenums">package com.careeris.api.application;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.List;
+
+import com.careeris.api.auth.UserAccount;
+import com.careeris.api.auth.UserAccountRepository;
+import com.careeris.api.vacancy.Vacancy;
+import com.careeris.api.vacancy.VacancyRepository;
+import com.careeris.api.vacancy.VacancyStatus;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+@Service
+public class ApplicationService {
+    private final InternshipApplicationRepository applications;
+    private final VacancyRepository vacancies;
+    private final UserAccountRepository users;
+
+<span class="fc" id="L24">    public ApplicationService(InternshipApplicationRepository applications, VacancyRepository vacancies, UserAccountRepository users) {</span>
+<span class="fc" id="L25">        this.applications = applications;</span>
+<span class="fc" id="L26">        this.vacancies = vacancies;</span>
+<span class="fc" id="L27">        this.users = users;</span>
+<span class="fc" id="L28">    }</span>
+
+    public List&lt;ApplicationResponse&gt; listForStudent(String studentId) {
+<span class="fc" id="L31">        return applications.findByStudentIdOrderByAppliedAtDesc(studentId).stream().map(ApplicationResponse::from).toList();</span>
+    }
+
+    public List&lt;ApplicationResponse&gt; listForCompany(String companyId, String vacancyId) {
+<span class="fc bfc" id="L35" title="All 4 branches covered.">        List&lt;InternshipApplication&gt; results = vacancyId == null || vacancyId.isBlank()</span>
+<span class="fc" id="L36">                ? applications.findByCompanyIdOrderByAppliedAtDesc(companyId)</span>
+<span class="fc" id="L37">                : applications.findByCompanyIdAndVacancyIdOrderByAppliedAtDesc(companyId, vacancyId);</span>
+<span class="fc" id="L38">        return results.stream().map(ApplicationResponse::from).toList();</span>
+    }
+
+    public ApplicationResponse updateStatus(String companyId, String applicationId, ApplicationStatus status) {
+<span class="pc bpc" id="L42" title="1 of 6 branches missed.">        if (status != ApplicationStatus.UNDER_REVIEW &amp;&amp; status != ApplicationStatus.INTERVIEW &amp;&amp; status != ApplicationStatus.REJECTED) {</span>
+<span class="nc" id="L43">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;Choose Under review, Interview, or Rejected.&quot;);</span>
+        }
+<span class="fc" id="L45">        InternshipApplication application = applications.findById(applicationId)</span>
+<span class="pc" id="L46">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Application not found.&quot;));</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (!application.getCompanyId().equals(companyId)) {</span>
+<span class="fc" id="L48">            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;You cannot update another company's application.&quot;);</span>
+        }
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (!ApplicationStatusTransitions.isAllowed(application.getStatus(), status)) {</span>
+<span class="fc" id="L51">            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;This application cannot move from &quot;</span>
+<span class="fc" id="L52">                    + application.getStatus() + &quot; to &quot; + status + &quot;.&quot;);</span>
+        }
+<span class="fc" id="L54">        application.setStatus(status);</span>
+<span class="fc" id="L55">        return ApplicationResponse.from(applications.save(application));</span>
+    }
+
+    public ApplicationResponse scheduleInterview(String companyId, String applicationId, InterviewScheduleRequest request) {
+<span class="fc" id="L59">        InternshipApplication application = applications.findById(applicationId)</span>
+<span class="fc" id="L60">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Application not found.&quot;));</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (!application.getCompanyId().equals(companyId)) {</span>
+<span class="fc" id="L62">            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;You cannot update another company's application.&quot;);</span>
+        }
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (application.getStatus() != ApplicationStatus.INTERVIEW) {</span>
+<span class="fc" id="L65">            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;Invite the student to interview before scheduling a time.&quot;);</span>
+        }
+<span class="fc" id="L67">        LocalDate today = LocalDate.now(ZoneId.of(&quot;Asia/Colombo&quot;));</span>
+<span class="fc bfc" id="L68" title="All 6 branches covered.">        if (request.date().isBefore(today) || (request.date().equals(today) &amp;&amp; request.time().isBefore(LocalTime.now(ZoneId.of(&quot;Asia/Colombo&quot;))))) {</span>
+<span class="fc" id="L69">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;Choose an interview time in the future.&quot;);</span>
+        }
+<span class="fc" id="L71">        application.setInterview(request.date(), request.time(), request.location(), request.notes());</span>
+<span class="fc" id="L72">        return ApplicationResponse.from(applications.save(application));</span>
+    }
+
+    public ApplicationResponse apply(String studentId, ApplicationRequest request) {
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (applications.findByStudentIdAndVacancyId(studentId, request.vacancyId()).isPresent()) {</span>
+<span class="fc" id="L77">            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;You have already applied to this vacancy.&quot;);</span>
+        }
+<span class="fc" id="L79">        UserAccount student = users.findById(studentId)</span>
+<span class="fc" id="L80">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;Student account no longer exists.&quot;));</span>
+<span class="fc" id="L81">        Vacancy vacancy = vacancies.findByIdAndStatus(request.vacancyId(), VacancyStatus.OPEN)</span>
+<span class="fc" id="L82">                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;This vacancy is no longer open.&quot;));</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (vacancy.getDeadline().isBefore(LocalDate.now())) {</span>
+<span class="fc" id="L84">            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;The application deadline has passed.&quot;);</span>
+        }
+
+<span class="fc" id="L87">        InternshipApplication application = new InternshipApplication(studentId, student.getDisplayName(), student.getEmail(),</span>
+<span class="fc" id="L88">                vacancy.getCompanyId(), vacancy.getCompanyName(), vacancy.getId(), vacancy.getTitle(), request.coverLetter());</span>
+        try {
+<span class="fc" id="L90">            return ApplicationResponse.from(applications.save(application));</span>
+<span class="fc" id="L91">        } catch (DuplicateKeyException exception) {</span>
+<span class="fc" id="L92">            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;You have already applied to this vacancy.&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

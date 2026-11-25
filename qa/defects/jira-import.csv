@@ -1,0 +1,134 @@
+Summary,Issue Type,Priority,Status,Assignee,Labels,Description
+3.1 Test planning & quality model,Task,Medium,Done,Liyanarachchi L.A.E.E,ec4206 task,"Task-list item 3.1 of the EC4206 assignment. Artefacts: ui/CareerIsUiSeleniumTest.java, qa/test-cases/CareerIS_Test_Cases.xlsx, qa/defects/*, Jira board"
+"3.2 STLC, test case design, test environment",Task,Medium,Done,Liyanarachchi L.A.E.E,ec4206 task,"Task-list item 3.2 of the EC4206 assignment. Artefacts: ui/CareerIsUiSeleniumTest.java, qa/test-cases/CareerIS_Test_Cases.xlsx, qa/defects/*, Jira board"
+3.6 Selenium WebDriver UI automation (5 tests),Task,Medium,Done,Liyanarachchi L.A.E.E,ec4206 task,"Task-list item 3.6 of the EC4206 assignment. Artefacts: ui/CareerIsUiSeleniumTest.java, qa/test-cases/CareerIS_Test_Cases.xlsx, qa/defects/*, Jira board"
+"3.8 Defect tracking (Jira), RCA, bug life cycle",Task,Medium,Done,Liyanarachchi L.A.E.E,ec4206 task,"Task-list item 3.8 of the EC4206 assignment. Artefacts: ui/CareerIsUiSeleniumTest.java, qa/test-cases/CareerIS_Test_Cases.xlsx, qa/defects/*, Jira board"
+3.10 Agile/DevOps reflection,Task,Medium,Done,Liyanarachchi L.A.E.E,ec4206 task,"Task-list item 3.10 of the EC4206 assignment. Artefacts: ui/CareerIsUiSeleniumTest.java, qa/test-cases/CareerIS_Test_Cases.xlsx, qa/defects/*, Jira board"
+"3.3 Equivalence partitioning, boundary value analysis, decision table",Task,Medium,Done,Jayasuriya J.A.D.N,ec4206 task,"Task-list item 3.3 of the EC4206 assignment. Artefacts: blackbox/*.java, security/OwaspSecurityTest.java"
+3.7 OWASP Top 10 security checks,Task,Medium,Done,Jayasuriya J.A.D.N,ec4206 task,"Task-list item 3.7 of the EC4206 assignment. Artefacts: blackbox/*.java, security/OwaspSecurityTest.java"
+"3.4 Cyclomatic complexity, statement & branch coverage",Task,Medium,Done,Wanasinghe W.M.C.O.B,ec4206 task,"Task-list item 3.4 of the EC4206 assignment. Artefacts: whitebox/*.java, tdd/*.java, ApplicationStatusTransitions.java, pom.xml (JaCoCo/PMD/Sonar)"
+"3.5 JUnit 5 + Mockito unit tests, TDD (red-green-refactor)",Task,Medium,Done,Wanasinghe W.M.C.O.B,ec4206 task,"Task-list item 3.5 of the EC4206 assignment. Artefacts: whitebox/*.java, tdd/*.java, ApplicationStatusTransitions.java, pom.xml (JaCoCo/PMD/Sonar)"
+"3.9 SonarQube metrics, JaCoCo, PMD, improvements",Task,Medium,Done,Wanasinghe W.M.C.O.B,ec4206 task,"Task-list item 3.9 of the EC4206 assignment. Artefacts: whitebox/*.java, tdd/*.java, ApplicationStatusTransitions.java, pom.xml (JaCoCo/PMD/Sonar)"
+3.5 BDD scenarios in Gherkin + Cucumber,Task,Medium,Done,Madhusanka E.M.P,ec4206 task,"Task-list item 3.5 of the EC4206 assignment. Artefacts: api/*.java, bdd/*.java, features/*.feature, .github/workflows/qa-tests.yml, qa/performance/*"
+"3.6 REST Assured API automation, GitHub Actions CI",Task,Medium,Done,Madhusanka E.M.P,ec4206 task,"Task-list item 3.6 of the EC4206 assignment. Artefacts: api/*.java, bdd/*.java, features/*.feature, .github/workflows/qa-tests.yml, qa/performance/*"
+3.7 JMeter load test,Task,Medium,Done,Madhusanka E.M.P,ec4206 task,"Task-list item 3.7 of the EC4206 assignment. Artefacts: api/*.java, bdd/*.java, features/*.feature, .github/workflows/qa-tests.yml, qa/performance/*"
+BUG-01: CV upload of a file of exactly 5 MB (and 5 MB - 1 byte) is rejected with HTTP 413,Bug,High,To Do,Wanasinghe W.M.C.O.B,ec4206 severity-major,"*Module:* Student profile / CV upload
+*Severity:* Major
+*Found with:* BVA (TC-BB-CV-04, TC-BB-CV-05)
+
+*Steps to reproduce*
+1. Sign in as a student.
+2. POST /api/student/profile/cv with a 5,242,880-byte PDF.
+
+*Expected:* HTTP 200 - README says CVs up to 5 MB are allowed.
+*Actual:* HTTP 413 Payload Too Large. Even 5,242,879 bytes fails.
+
+*Root cause:* spring.servlet.multipart.max-request-size=5MB limits the WHOLE multipart request. The request also contains boundaries and part headers (~200 bytes), so a file near 5 MB pushes the request over the limit before the file-size rule is checked.
+
+*Fix:* max-request-size raised to 6MB; max-file-size stays 5MB (application.properties). Regression test TC-BB-CV-01..06 now passes."
+BUG-02: A REJECTED application can be moved back to INTERVIEW or UNDER_REVIEW,Bug,High,To Do,Wanasinghe W.M.C.O.B,ec4206 severity-major,"*Module:* Company / application review
+*Severity:* Major
+*Found with:* State-transition analysis, fixed with TDD
+
+*Steps to reproduce*
+1. Company rejects an application (PATCH /status REJECTED).
+2. PATCH /status INTERVIEW on the same application.
+
+*Expected:* HTTP 409 - a rejected student must not be re-invited by mistake.
+*Actual:* HTTP 200 - status changed to INTERVIEW; the student sees an interview invitation after being rejected.
+
+*Root cause:* ApplicationService.updateStatus() only checked the TARGET status, never the CURRENT status. No state machine was designed for applications.
+
+*Fix:* New ApplicationStatusTransitions class written test-first (TDD) and called from updateStatus(); returns 409 for illegal moves. Regression tests API-09 and Cucumber outline."
+BUG-03: Password characters after the 72nd byte are ignored - a different password can sign in,Bug,Highest,To Do,Wanasinghe W.M.C.O.B,ec4206 severity-critical,"*Module:* Authentication
+*Severity:* Critical
+*Found with:* BVA on bytes vs characters (TC-BB-PW-MB)
+
+*Steps to reproduce*
+1. Register with password = 24 Sinhala letters + 'secret' (30 chars, 90 bytes).
+2. Log in with 24 Sinhala letters + 'WRONG!'.
+
+*Expected:* HTTP 401 - wrong password.
+*Actual:* HTTP 200 - login succeeds and a JWT is issued.
+
+*Root cause:* BCrypt only uses the first 72 BYTES of a password. Validation (@Size max=72) counts CHARACTERS. Sinhala/Tamil letters are 3 bytes in UTF-8, so a 30-letter password is 90 bytes and the last 18 bytes are silently dropped.
+
+*Fix:* Proposed: validate UTF-8 byte length <= 72 (custom validator) or pre-hash with SHA-256 before bcrypt / use Argon2PasswordEncoder."
+BUG-04: No brute-force protection: unlimited wrong-password attempts are allowed,Bug,High,To Do,Wanasinghe W.M.C.O.B,ec4206 severity-major,"*Module:* Authentication
+*Severity:* Major
+*Found with:* OWASP A07 check (SEC-13)
+
+*Steps to reproduce*
+Send 11 wrong passwords for the same account in a row.
+
+*Expected:* After 10 failures the account is throttled (HTTP 429) or locked for a short time.
+*Actual:* Every attempt returns 401 and attempts are never limited.
+
+*Root cause:* No rate limiting or failed-attempt counter was designed into AuthService (security requirement missing in the original spec).
+
+*Fix:* Proposed: count failures per e-mail/IP (e.g. Bucket4j) and return 429 for 15 minutes after 10 failures."
+BUG-05: E-mail without a domain suffix (nimal@localhost) is accepted at registration,Bug,Low,To Do,Liyanarachchi L.A.E.E,ec4206 severity-minor,"*Module:* Registration
+*Severity:* Minor
+*Found with:* Equivalence partitioning (TC-BB-EM-OBS)
+
+*Steps to reproduce*
+Register with e-mail 'nimal@localhost'.
+
+*Expected:* HTTP 400 - invalid e-mail.
+*Actual:* HTTP 201 - account created.
+
+*Root cause:* Jakarta @Email follows RFC rules where a dot-less domain is legal.
+
+*Fix:* Proposed: @Email(regexp = "".+@.+\\..+"") on RegisterRequest.email."
+BUG-06: Vacancy deadline has no upper limit (year 9999 accepted),Bug,Low,To Do,Madhusanka E.M.P,ec4206 severity-minor,"*Module:* Company / vacancies
+*Severity:* Minor
+*Found with:* BVA on date (TC-BB-DL-OBS)
+
+*Steps to reproduce*
+Create a vacancy with deadline 9999-12-31.
+
+*Expected:* HTTP 400 (e.g. max 1 year ahead).
+*Actual:* HTTP 201 - vacancy stays open forever.
+
+*Root cause:* Only @FutureOrPresent is applied; no maximum was specified.
+
+*Fix:* Proposed: custom validator - deadline <= today + 365 days."
+BUG-07: CV content type is trusted from the client - HTML renamed to .pdf is stored and served as text/html,Bug,High,To Do,Wanasinghe W.M.C.O.B,ec4206 severity-major,"*Module:* Student profile / CV upload
+*Severity:* Major
+*Found with:* OWASP A04 Insecure Design (SEC-14)
+
+*Steps to reproduce*
+Upload 'cv.pdf' whose body is <script>alert(1)</script> with Content-Type text/html.
+
+*Expected:* HTTP 400 - file is not a real PDF/DOC/DOCX.
+*Actual:* HTTP 200 - file stored; download returns Content-Type text/html.
+
+*Root cause:* StudentProfileService only checks the file NAME extension and copies the client's Content-Type header.
+
+*Fix:* Proposed: check magic bytes (%PDF, D0CF11E0, PK) with Apache Tika and set the content type on the server."
+BUG-08: Deadline checks use the server time zone (UTC on Render) instead of Asia/Colombo,Bug,Medium,To Do,Wanasinghe W.M.C.O.B,ec4206 severity-minor,"*Module:* Vacancies / applications
+*Severity:* Minor
+*Found with:* White-box code review (static)
+
+*Steps to reproduce*
+Deploy on Render (UTC). Vacancy deadline = 24 Nov. At 25 Nov 02:00 Sri Lanka time, apply.
+
+*Expected:* HTTP 409 - deadline passed in Sri Lanka.
+*Actual:* Application accepted until 05:30 SL time because UTC date is still 24 Nov.
+
+*Root cause:* ApplicationService.apply() and VacancyService use LocalDate.now() (JVM zone) while scheduleInterview() uses Asia/Colombo - inconsistent design.
+
+*Fix:* Proposed: one Clock bean with ZoneId Asia/Colombo injected into all services."
+"BUG-09: Public endpoints (login, health) return 401 when an expired/invalid Bearer token is sent",Bug,Low,To Do,Madhusanka E.M.P,ec4206 severity-minor,"*Module:* Security configuration
+*Severity:* Minor
+*Found with:* Found while building the JMeter script
+
+*Steps to reproduce*
+POST /api/auth/login with header 'Authorization: Bearer expired.token.value'.
+
+*Expected:* HTTP 200 - login is public.
+*Actual:* HTTP 401 - API clients holding an old token cannot log in again.
+
+*Root cause:* Spring's BearerTokenAuthenticationFilter validates any Authorization header before permitAll() rules are applied.
+
+*Fix:* Proposed: ignore the bearer token on public paths (custom BearerTokenResolver)."

@@ -47,6 +47,10 @@ public class ApplicationService {
         if (!application.getCompanyId().equals(companyId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot update another company's application.");
         }
+        if (!ApplicationStatusTransitions.isAllowed(application.getStatus(), status)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This application cannot move from "
+                    + application.getStatus() + " to " + status + ".");
+        }
         application.setStatus(status);
         return ApplicationResponse.from(applications.save(application));
     }

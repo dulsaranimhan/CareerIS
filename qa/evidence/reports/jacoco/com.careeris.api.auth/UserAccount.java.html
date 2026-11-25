@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserAccount.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CareerIS API</a> &gt; <a href="index.source.html" class="el_package">com.careeris.api.auth</a> &gt; <span class="el_source">UserAccount.java</span></div><h1>UserAccount.java</h1><pre class="source lang-java linenums">package com.careeris.api.auth;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = &quot;users&quot;)
+public class UserAccount {
+    @Id
+    private String id;
+
+    @Indexed(unique = true)
+    private String email;
+
+    private String displayName;
+    private String contactName;
+    private String passwordHash;
+    private UserRole role;
+    private Instant createdAt;
+    private String education;
+    private String qualification;
+    private String profileSummary;
+<span class="fc" id="L27">    private List&lt;String&gt; skills = new ArrayList&lt;&gt;();</span>
+    private String cvFileId;
+    private String cvFileName;
+    private String cvContentType;
+
+<span class="fc" id="L32">    protected UserAccount() {</span>
+<span class="fc" id="L33">    }</span>
+
+<span class="fc" id="L35">    public UserAccount(String email, String displayName, String contactName, String passwordHash, UserRole role) {</span>
+<span class="fc" id="L36">        this.email = email;</span>
+<span class="fc" id="L37">        this.displayName = displayName;</span>
+<span class="fc" id="L38">        this.contactName = contactName;</span>
+<span class="fc" id="L39">        this.passwordHash = passwordHash;</span>
+<span class="fc" id="L40">        this.role = role;</span>
+<span class="fc" id="L41">        this.createdAt = Instant.now();</span>
+<span class="fc" id="L42">    }</span>
+
+    public String getId() {
+<span class="fc" id="L45">        return id;</span>
+    }
+
+    public String getEmail() {
+<span class="fc" id="L49">        return email;</span>
+    }
+
+    public String getDisplayName() {
+<span class="fc" id="L53">        return displayName;</span>
+    }
+
+    public String getContactName() {
+<span class="fc" id="L57">        return contactName;</span>
+    }
+
+    public String getPasswordHash() {
+<span class="fc" id="L61">        return passwordHash;</span>
+    }
+
+    public UserRole getRole() {
+<span class="fc" id="L65">        return role;</span>
+    }
+
+    public Instant getCreatedAt() {
+<span class="fc" id="L69">        return createdAt;</span>
+    }
+
+<span class="fc" id="L72">    public String getEducation() { return education; }</span>
+<span class="fc" id="L73">    public void setEducation(String education) { this.education = education; }</span>
+<span class="fc" id="L74">    public String getQualification() { return qualification; }</span>
+<span class="fc" id="L75">    public void setQualification(String qualification) { this.qualification = qualification; }</span>
+<span class="fc" id="L76">    public String getProfileSummary() { return profileSummary; }</span>
+<span class="fc" id="L77">    public void setProfileSummary(String profileSummary) { this.profileSummary = profileSummary; }</span>
+<span class="fc" id="L78">    public List&lt;String&gt; getSkills() { return skills; }</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">    public void setSkills(List&lt;String&gt; skills) { this.skills = skills == null ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(skills); }</span>
+<span class="fc" id="L80">    public String getCvFileId() { return cvFileId; }</span>
+<span class="fc" id="L81">    public void setCvFileId(String cvFileId) { this.cvFileId = cvFileId; }</span>
+<span class="fc" id="L82">    public String getCvFileName() { return cvFileName; }</span>
+<span class="fc" id="L83">    public void setCvFileName(String cvFileName) { this.cvFileName = cvFileName; }</span>
+<span class="fc" id="L84">    public String getCvContentType() { return cvContentType; }</span>
+<span class="fc" id="L85">    public void setCvContentType(String cvContentType) { this.cvContentType = cvContentType; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApplicationResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CareerIS API</a> &gt; <a href="index.source.html" class="el_package">com.careeris.api.application</a> &gt; <span class="el_source">ApplicationResponse.java</span></div><h1>ApplicationResponse.java</h1><pre class="source lang-java linenums">package com.careeris.api.application;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+<span class="fc" id="L7">public record ApplicationResponse(</span>
+        String id,
+        String studentId,
+        String studentName,
+        String studentEmail,
+        String companyId,
+        String companyName,
+        String vacancyId,
+        String vacancyTitle,
+        String coverLetter,
+        ApplicationStatus status,
+        Instant appliedAt,
+        Instant updatedAt,
+        LocalDate interviewDate,
+        LocalTime interviewTime,
+        String interviewLocation,
+        String interviewNotes) {
+    public static ApplicationResponse from(InternshipApplication application) {
+<span class="fc" id="L25">        return new ApplicationResponse(application.getId(), application.getStudentId(), application.getStudentName(),</span>
+<span class="fc" id="L26">                application.getStudentEmail(), application.getCompanyId(), application.getCompanyName(),</span>
+<span class="fc" id="L27">                application.getVacancyId(), application.getVacancyTitle(), application.getCoverLetter(),</span>
+<span class="fc" id="L28">                application.getStatus(), application.getAppliedAt(), application.getUpdatedAt(),</span>
+<span class="fc" id="L29">                application.getInterviewDate(), application.getInterviewTime(), application.getInterviewLocation(),</span>
+<span class="fc" id="L30">                application.getInterviewNotes());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
